@@ -1,12 +1,24 @@
-let today=new Date;
-let month=["january","feburary","march","april","may","june","july","august","september","october","november","december"]
-let thisMonth=month[today.getMonth()];
+let today=function(){
+    let d=new Date;
+    console.log(d)
+}
+// console.log(today())
+let month=function(){
+    let m=["january","feburary","march","april","may","june","july","august","september","october","november","december"]
+    let d=new Date;
+     let thisMonth=m[d.getMonth()]
+     console.log(thisMonth)
+}
+// console.log(month())
+
 let getbatchinfo=function(){
-    console.log('hi i am saket kumar,Rodon batch, Week-3 Day-3, the topic for today is Nodejs module system')
+    let inf='hi i am saket kumar,Rodon batch, Week-3 Day-3, the topic for today is Nodejs module system';
+    console.log(inf)
 }
 
 
 
+
 module.exports.today = today
- module.exports.thisMonth = thisMonth
+ module.exports.month = month
 module.exports.getbatchinfo = getbatchinfo
