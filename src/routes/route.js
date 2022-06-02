@@ -28,13 +28,20 @@ router.get('/candidates', function(req, res){
     console.log('District is '+district)
     let candidates = ['Akash','Suman']
     res.send(candidates)
-})
+});
 
 router.get('/candidates/:canidatesName', function(req, res){
     console.log('The request objects is '+ JSON.stringify(req.params))
     console.log('Candidates name is '+req.params.canidatesName)
     res.send('Done')
-})
+// })
+
+// router.get('/movies', function(req, res){
+//   let movies=['The Shawshank Redemption' ,' The Godfather','The Dark Knight', 'The Godfather: Part II ','12 Angry Men','The Lord of the Rings', 'Pulp Fiction']
+//   console.log('The request objects is '+ JSON.stringify(req.params))
+//   console.log('Candidates name is '+req.params.canidatesName)
+//   res.send('Done')
+// });
 
 
 module.exports = router;
