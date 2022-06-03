@@ -50,22 +50,22 @@ router.get('/films', function(req, res){
   router.get('/films/:Id'), function(req, res){
     let pic=[
       {
-        id: 1,
-        name:'king'
+        'id': 1,
+        'name':'king'
   },
   {
-    id: 2,
-    name:'dost'
+    'id': 2,
+    'name':'dost'
   },{
-    id:3,
-    name:'DDLJ'
+    'id':3,
+    'name':'DDLJ'
   },
 {
-  id:4,
-  name:'kite'
+  'id':4,
+ 'name':'kite'
 },{
-  id:5,
-  name:'fan'
+  'id':5,
+ 'name':'fan'
 }];
 for(i=0;i<pic.length;i++){
   let fm=pic[i]
