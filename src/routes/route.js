@@ -3,11 +3,11 @@ const router = express.Router();
 const Controller= require("../controllers/controller")
 
 
-router.get("/createAuthor", Controller.createAuthor)
+router.post("/createAuthor", Controller.createAuthor)
 
-router.get("/createBook", Controller.createBook  )
+router.post("/createBook", Controller.createBook )
 
-router.post("/chetanBhagatBooks", Controller.chetanBhagatBooks )
+router.get("/chetanBhagatBooks", Controller.chetanBhagatBooks )
 
 router.get("/twoStateAuthor", Controller.twoStateAuthor)
 
