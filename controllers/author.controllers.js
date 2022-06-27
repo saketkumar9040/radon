@@ -35,10 +35,10 @@ exports.authordata = async (req, res) => {
 //===================================================[API:FOR AUTHOR LOGIN]===========================================================
 exports.loginauthor = async function (req, res) {
     try {
-        let userName = req.body.email;    //geting email from request body
+        let userName = req.body.emailId;    //geting email from request body
         let passWord = req.body.password; //getting password from request body
 
-        let author = await authorSchema.findOne({ email: userName,password: passWord})
+        let author = await authorSchema.findOne({ emailId: userName,password: passWord})
 
         if (!author)  //checking user data is available or not    
             return res.status(400).send({

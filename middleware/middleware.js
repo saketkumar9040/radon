@@ -2,13 +2,14 @@ const jwt = require("jsonwebtoken");
 
 //===================================================[API:FOR AUTHENTICATION]===========================================================
 let authorloged;
+let decodedtoken;
 exports.authentication = async (req, res, next) => {
     try {
         let token = req.headers["x-api-key"] || req.headers["X-API-KEY"]
         if (!token) {
             return res.status(406).send({ status: false, msg: "token must be present" })
         }try{
-        let decodedtoken = jwt.verify(token, 'lama');
+         decodedtoken = jwt.verify(token, 'lama');
          authorloged = decodedtoken.authorId}catch(msg){
         if (!authorloged) return res.status(401).send({ status: false, msg: "token is invalid" })}
         next();
@@ -24,7 +25,7 @@ exports.autherization = async (req, res, next) => {
         if (!token) {
             return res.status(406).send({ status: false, msg: "token must be present" })
         }try{
-        let decodedtoken = jwt.verify(token, 'lama');
+         decodedtoken = jwt.verify(token, 'lama');
          authorloged = decodedtoken.authorId}catch(msg){
         if (!authorloged) return res.status(401).send({ status: false, msg: "token is invalid" })}
         req.authorverfiy = decodedtoken.authorId  //setting authorId of decodedtoken in request to use in API
