@@ -5,11 +5,11 @@ const blogSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      required: true,
+      required: true
     },
     body: {
       type: String,
-      required: true,
+      required: true
     },
     authorId: {
       type: ObjectId,
@@ -18,7 +18,6 @@ const blogSchema = new mongoose.Schema(
 
     tags: {
       type: [String],
-      required: true,
       lowercase: true
     },
     category: {
@@ -32,16 +31,18 @@ const blogSchema = new mongoose.Schema(
     },
     isDeleted: {
       type: Boolean,
-      default: false,
+      default: false
     },
     publishedAt: {
-      type: String,
+      type: String
     },
     deletedAt: {
-      type: String,
+      type: String
     },
 
-    isPublished: { type: Boolean, default: false },
+    isPublished: { type: Boolean,
+       default: false 
+      },
   },
   { timestamps: true }
 );
