@@ -147,7 +147,7 @@ exports.blogUpdate = async (req, res) => {
 
 exports.delblog = async (req, res) => {
     try {
-        let data = req.params
+    
         let id = data.blogId
         let authorloged = req.authorverfiy //authorverify is present in request that we have set in authorization middleware it contains loggedIn AuthorId
         if (id) {
