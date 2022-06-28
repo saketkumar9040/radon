@@ -71,7 +71,7 @@ const getBlogs = async (req, res) => {
     let blog = await blogModel
       .find({ isDeleted: false, isPublished: true })
       .find(requestedData);
-    console.log(blog);
+    // console.log(blog);
     if (!blog){
      return res.status(404).send({ status: false, msg: "no Such Blog Exists" });
     }
@@ -102,23 +102,7 @@ const updateBlog = async (req, res) =>{
         .status(400)
         .send({ status: false, msg:" blogId Is Incorrect" });
     }
-     let modifyData=blogData
 
-     if(blogData.title){blogData.title=modifyData.title}
-     else{return res.status(400).send({status:false,msg:"please Check The Title Field"})}
-
-     if(blogData.body){blogData.body=modifyData.body}
-     else{return res.status(400).send({status:false,msg:"please Check The Body Field"})}
-
-     if(blogData.tags){blogData.tags=modifyData.tags}
-     else{return res.status(400).send({status:false,msg:"please Check The Tags Field"})}
-
-     if(blogData.category){blogData.category=modifyData.category}
-     else{return res.status(400).send({status:false,msg:"please Check The Category Field"})}
-
-     if(blogData.subcategory){blogData.subcategory=modifyData.subcategory}
-     else{return res.status(400).send({status:false,msg:"please Check The subcategory Field"})}
-     
      let token = req.headers["x-api-key"];
       if(!token){token=req.headers["x-Api-Key"]}
       let decodedToken = jwt.verify(token, "group-16");
@@ -134,11 +118,11 @@ const updateBlog = async (req, res) =>{
     let updatedBlog = await blogModel.findOneAndUpdate(
       { _id: blogId },
       {
-        $push: { tags: modifyData.tags, subcategory: modifyData.subcategory },
+        $push: { tags: blogData.tags, subcategory: blogData.subcategory },
         $set: {
-          body: modifyData.body,
-          title: modifyData.title,
-          category: modifyData.category,
+          body: blogData.body,
+          title: blogData.title,
+          category: blogData.category,
           publishedAt: Date(),
           isPublished: true,
         },
@@ -185,7 +169,7 @@ const deleteBlogById = async (req,res) => {
     
     let verifyAuthor=await blogModel.findById({_id:blogId}).select({authorId:1})
     if(!verifyAuthor){return res.status(404).send({status:false,msg:"author Has No Such Blogs"})}
-    if(verifyAuthor!=decodedToken.authorId){return res.status(401).send("author Is Not Authorised For The Modification Of This Blog")}
+    if(verifyAuthor.authorId!=decodedToken.authorId){return res.status(401).send({status:false,msg:"author Is Not Authorised For The Modification Of This Blog"})}
   
     let deletedBlog = await blogModel.findOneAndUpdate(
       {_id: blogId, isDeleted: false },
@@ -241,7 +225,7 @@ let deletedBlog = await blogModel
         .status(404)
         .send({ status: false, message: "no such blog exists" });
     }
-   res.status(200).send({ status: true, data: "blog Has Been Deleted" });
+   res.status(200).send({ status: true });
   } catch (err) {
    return res.status(500).send({ status: false, msg: err.message });
   }
