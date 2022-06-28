@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rvsharma9818/BlogProject.git"
+    "url": "git+https://github.com/ranjeetsingh23/Project-1-Blogging_Site.git"
   },
   "keywords": [
     "Blog"
@@ -17,16 +17,15 @@
   "author": "Gropu",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/rvsharma9818/BlogProject/issues"
+    "url": "https://github.com/ranjeetsingh23/Project-1-Blogging_Site/issues"
   },
-  "homepage": "https://github.com/rvsharma9818/BlogProject#readme",
+  "homepage": "https://github.com/ranjeetsingh23/Project-1-Blogging_Site#readme",
   "dependencies": {
     "body-parser": "^1.20.0",
-    "dotenv": "^16.0.1",
+    "email-validator": "^2.0.4",
     "express": "^4.18.1",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.4.0",
-    "nodemon": "^1.19.4",
-    "validator": "^13.7.0"
+    "nodemon": "^1.19.4"
   }
 }

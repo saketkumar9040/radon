@@ -72,6 +72,7 @@ exports.getBlog = async function (req, res) {
                 { title: query.title },
             ];
         }
+
         let filterByquery = await blogSchema.find(filter) //finding blog from database 
         res.status(200).send({ msg: filterByquery });
     } catch (err) {
