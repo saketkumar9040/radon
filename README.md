@@ -1,5 +1,5 @@
 # project1_blog
-function up group project1
+
 Repository for backend cohort - Radon
 
 # Running a project
