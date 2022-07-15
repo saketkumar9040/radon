@@ -6,7 +6,12 @@ const route = require('./routes/route.js');
 const app = express();
 
 const multer= require("multer");
-const { AppConfig } = require('aws-sdk');
+
+mongoose.connect("mongodb://localhost:27017",
+   {useNewUrlParser: true}
+)
+.then( () => console.log("MongoDb is connected"))
+.catch ( err => console.log(err) )
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
