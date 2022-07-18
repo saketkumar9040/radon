@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+//==================================================<<<<<< SCHEMA >>>>>>======================================================//
+
 const urlSchema = new mongoose.Schema(
     {
         urlCode: {
