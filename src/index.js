@@ -11,6 +11,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(multer().any())
 
+route.all("/**", function (req, res) {
+    res.status(404).send({
+        status: false,
+        msg: "The api you request is not available"
+    })
+})
+
 mongoose.connect("mongodb+srv://Saswath1403:S%40swath9476@cluster0.fjep0.mongodb.net/group7Database-DB", {
     useNewUrlParser: true
 })

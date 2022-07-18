@@ -31,8 +31,10 @@ const createUrl = async (req, res) => {
 
 const getUrl = async (req, res) => {
     const urlCode = req.params.urlCode
+    if (!shortId.isValid(urlCode)) return res.status(400).send({ status: false, message: "Invalid URL!" })
     const findUrl = await urlModel.findOne({ urlCode })
-    return res.redirect(201,findUrl.longUrl)
+    if(!findUrl) return res.status(400).send({ status: false, message: "Url not found!" })
+    return res.redirect(201, findUrl.longUrl)
 }
 
 module.exports = { createUrl, getUrl }
