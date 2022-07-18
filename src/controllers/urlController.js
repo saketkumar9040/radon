@@ -2,7 +2,7 @@ const validUrl = require("valid-url");
 const shortId = require("shortid");
 const urlModel = require("../models/urlModel");
 const urlRegex = (value) => {
-    let urlRegex = /(https|http?:\/\/.*\.(?:com|in|co|org|png|gif|webp|jpeg|jpg))/i;
+    let urlRegex = /^(?:(?:(?:https?|http):)?\/\/)?(www\.)?[a-z0-9\-\.]{3,}\.[a-z]{3}$/;
     if (urlRegex.test(value))
         return true;
 }
@@ -32,7 +32,7 @@ const createUrl = async (req, res) => {
 const getUrl = async (req, res) => {
     const urlCode = req.params.urlCode
     const findUrl = await urlModel.findOne({ urlCode })
-    return res.status(302).redirect(findUrl.longUrl)
+    return res.redirect(201,findUrl.longUrl)
 }
 
 module.exports = { createUrl, getUrl }
