@@ -2,7 +2,7 @@ const validUrl = require("valid-url");
 const shortId = require("shortid");
 const urlModel = require("../models/urlModel");
 const urlRegex = (value) => {
-    let urlRegex = /^(?:(?:(?:https?|http):)?\/\/)?(www\.)?[a-z0-9\-\.]{3,}\.[a-z]{3}$/;
+    let urlRegex = /^(?:(?:(?:https?|http):)?\/\/.*\.(?:png|gif|webp|com|in|org|co|co.in|net|jpeg|jpg))/i;
     if (urlRegex.test(value))
         return true;
 }
