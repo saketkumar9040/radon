@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(multer().any())
 
-route.all("/**", function (req, res) {
+route.all("/*", function (req, res) {
     res.status(400).send({
         status: false,
         msg: "The api you request is not available!"
