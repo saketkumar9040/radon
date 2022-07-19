@@ -38,7 +38,7 @@ const createUrl = async (req, res) => {
 
 const getUrl = async (req, res) => {
  try {  const urlCode = req.params.urlCode
-    // if (!shortId.isValid(urlCode)) return res.status(400).send({ status: false, message: "Invalid URL!" })
+    if (!shortId.isValid(urlCode)) return res.status(400).send({ status: false, message: "Invalid URL!" })
     const findUrl = await urlModel.findOne({ urlCode })
     if(!findUrl) return res.status(400).send({ status: false, message: "Url not found!" })
     return res.status(302).redirect(findUrl.longUrl)
