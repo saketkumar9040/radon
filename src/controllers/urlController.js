@@ -66,7 +66,7 @@ const createUrl = async (req, res) => {
             await SET_ASYNC(`${longUrl}`, JSON.stringify(data))// STORING THE DATA IN CLOUD FOR FURTHER USE
             return res.status(201).send({ status: true, data: data })
         }
-        
+
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
     }
@@ -82,7 +82,7 @@ const getUrl = async (req, res) => {
         //VALIDATING SHORT-ID CODE USING SHORTID PACKAGE
         if (!shortId.isValid(urlCode)) return res.status(400).send({ status: false, message: "Invalid URL!" })
 
-        let cache = await GET_ASYNC(`${req.params.urlCode}`)//  SEARCHING FOR URL-CODE IN  CLOUD  STORAGE 
+        let cache = await GET_ASYNC(`${req.params.urlCode}`)
         cache = JSON.parse(cache)
         if (cache) return res.status(302).redirect(cache.longUrl)
 
