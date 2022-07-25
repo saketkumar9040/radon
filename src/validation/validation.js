@@ -9,8 +9,8 @@ const isValid =(value)=>{
 }
 
 const isValidBody=(body)=>{
-    if(mongoose.isValidObjectId(body).length==0)
-    return false
+    if(Object.keys(body).length==0)
+    return true
 }
 
 const isValidName=(name)=>{
