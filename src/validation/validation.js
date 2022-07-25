@@ -46,7 +46,7 @@ const isValidStreet =(street)=>{
 
 const securepw= async (pw)=>{
 let saltrounds=10
-const hashpass= await bcrypt.hash(password, saltrounds)
+const hashpass= await bcrypt.hash(pw, saltrounds)
 return hashpass
 }
 
