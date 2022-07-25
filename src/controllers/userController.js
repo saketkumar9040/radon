@@ -7,14 +7,12 @@ const createUser=async function(req,res){
     let data= req.body
     if(isValidBody(data)) return res.status(400).send({status:false,message:"Body Should not be empty"})
     const {fname,lname,email,phone,password,address,profileImage}= data
-       
-    if(!("fname" in data)) return res.status(400).send({status:false,message:"fname is required"})
-    if(!("lname" in data)) return res.status(400).send({status:false,message:"lname is required"})
-    if(!("email" in data)) return res.status(400).send({status:false,message:"email is required"})
-    // if(!("profileImage" in data))return res.status(400).send({status:false,message:"profileImage is required"})
-    if(!("phone" in data)) return res.status(400).send({status:false,message:"phone is required"})
-    if(!("password" in data)) return res.status(400).send({status:false,message:"password is required"})
-    if(!("address" in data)) return res.status(400).send({status:false,message:"address is required"})
+    let arr=["fname","lname","email","phone","password","address"]
+       for(let i=0;i<arr.length;i++){
+          if(!(arr[i] in data)){
+             return res.status(400).send({status:false,message:`${arr[i]} is required`})
+          }
+       }
     
     if(!isValid(fname)) return res.status(400).send({status:false,message:"fname shouldnot be empty"})
     if(!isValidName(fname)) return res.status(400).send({status:false,message:"Pls Enter Valid First Name"})
@@ -22,7 +20,6 @@ const createUser=async function(req,res){
     if(!isValidName(lname)) return res.status(400).send({status:false,message:"Pls Enter Valid Last Name"})
     if(!isValid(email)) return res.status(400).send({status:false,message:"email shouldnot be empty"})
     if(!isValidMail(email)) return res.status(400).send({status:false,message:"Pls enter EmailId in Valid Format"})
-   // if(!isValid(profileImage))return res.status(400).send({status:false,message:"profileImage shouldnot be empty"})
     if(!isValid(phone)) return res.status(400).send({status:false,message:"phone shouldnot be empty"})
     if(!isValidPh(phone)) return res.status(400).send({status:false,message:"Phone No.Should be valid INDIAN no."})
     if(!isValid(password)) return res.status(400).send({status:false,message:"password shouldnot be empty"})
@@ -34,9 +31,11 @@ const createUser=async function(req,res){
     if(!("shipping" in address)) return res.status(400).send({status:false,message:"Shipping is required in address"})
     if(typeof address.shipping=== "string") return res.status(400).send({status:false,message:"Shipping in Address Should be an object"})
     if(isValidBody(address.shipping)) return res.status(400).send({status:false,message:"Shipping Should not be empty"})
-    if(!("street" in address.shipping)) return res.status(400).send({status:false,message:"Street In Shipping is required"})
-    if(!("city" in address.shipping)) return res.status(400).send({status:false,message:"City In Shipping is required"})
-    if(!("pincode" in address.shipping)) return res.status(400).send({status:false,message:"Pincode In Shipping is required"})
+
+    let required= ["street","city","pincode"]
+    for(let i=0;i<required.length;i++){
+        if(!(required[i] in address.shipping)) return res.status(400).send({status:false,message:`${required[i]} is required in Shipping`})}
+
     if(!isValid(address.shipping.street)) return res.status(400).send({status:false,message:"Street should not be empty in Shipping"})
     if(!isValid(address.shipping.city)) return res.status(400).send({status:false,message:"city should not be empty in shipping"})
     if(!isValidName(address.shipping.city)) return res.status(400).send({status:false,message:"Pls Enter Valid City Name in Shipping"})
@@ -46,9 +45,11 @@ const createUser=async function(req,res){
     if(!("billing" in address)) return res.status(400).send({status:false,message:"Billing Is required in address"})
     if(typeof address.billing === "string") return res.status(400).send({status:false,message:"billing should be an Object"})
     if(isValidBody(address.billing)) return res.status(400).send({status:false,message:"Billing Should not be empty"})
-    if(!("street" in address.billing)) return res.status(400).send({status:false,message:"Street In Billing is required"})
-    if(!("city" in address.billing)) return res.status(400).send({status:false,message:"City In Billing is required"})
-    if(!("pincode" in address.billing)) return res.status(400).send({status:false,message:"Pincode In Billing is required"})
+
+    let required1= ["street","city","pincode"]
+    for(let i=0;i<required1.length;i++){
+        if(!(required1[i] in address.billing)) return res.status(400).send({status:false,message:`${required1[i]} is required in Billing`})}
+   
     if(!isValid(address.billing.street)) return res.status(400).send({status:false,message:"Street should not be empty in Billing"})
     if(!isValid(address.billing.city)) return res.status(400).send({status:false,message:"city should not be empty in Billing"})
     if(!isValidName(address.billing.city)) return res.status(400).send({status:false,message:"Pls Enter Valid City Name in Billing"})
