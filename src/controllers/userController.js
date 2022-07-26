@@ -139,18 +139,26 @@ const loginUser= async(req,res)=>{
 
    const updateUser=async function(req,res){
     let userId=req.params.userId
+    let data=req.body
     
-
     if(userId.userId==undefined || null) return res.status(400).send({status:false,message:"pleas enter user id in the params"})
     if(!isValidObjectId(userId)) return res.status(400).send({status:false,message:"Given id format is invalid"})
  
     let findParams=await usermodel.findOne({userId})
     if(!findParams) return res.status(400).send({status:false,message:"We couldn't find data by given id"})
 
-
-
     
 
+    if(data.hasOwnProperty(fname)){
+    if(!isValid(fname)) return res.status(400).send({status:false,message:"fname shouldnot be empty"})
+    if(!isValidName(fname)) return res.status(400).send({status:false,message:"Pls Enter Valid First Name"})
+    }
+
+    if(!isValid(lname)) return res.status(400).send({status:false,message:"lname shouldnot be empty"})
+    if(!isValidName(lname)) return res.status(400).send({status:false,message:"Pls Enter Valid Last Name"})
+
+    if(!isValid(email)) return res.status(400).send({status:false,message:"email shouldnot be empty"})
+    if(!isValidMail(email)) return res.status(400).send({status:false,message:"Pls enter EmailId in Valid Format"})
     
       
    }
