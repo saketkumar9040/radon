@@ -55,7 +55,7 @@ const comparePw= async (pw,hash)=>{
     return compare
 }
 const isValidImg=(img)=>{
-    if(/[^\s]+(\.(?i)(jpg|png|gif|bmp))$/.test(img))
-    return true
+    const reg = /image\/png|image\/jpeg|image\/jpg/;
+    return reg.test(img)
 }
 module.exports={isValid,isValidStreet,isValidPincode,isValidPassword,isValidPh,isValidMail,isValidName,isValidBody,securepw,comparePw,isValidImg}

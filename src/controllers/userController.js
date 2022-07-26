@@ -1,11 +1,12 @@
 const usermodel= require("../models/userModel")
 const { isValid, isValidBody, isValidName, isValidMail, isValidImg, isValidPh, isValidPassword, isValidPincode, isValidStreet, securepw } = require("../validation/validation")
-const aws= require("aws-sdk")
+const {uploadFile}=require("../aws/aws")
 
 const createUser=async function(req,res){
     try{
     let data= req.body
     if(isValidBody(data)) return res.status(400).send({status:false,message:"Body Should not be empty"})
+    let files= req.files
     const {fname,lname,email,phone,password,address,profileImage}= data
     let arr=["fname","lname","email","phone","password","address"]
        for(let i=0;i<arr.length;i++){
@@ -20,6 +21,7 @@ const createUser=async function(req,res){
     if(!isValidName(lname)) return res.status(400).send({status:false,message:"Pls Enter Valid Last Name"})
     if(!isValid(email)) return res.status(400).send({status:false,message:"email shouldnot be empty"})
     if(!isValidMail(email)) return res.status(400).send({status:false,message:"Pls enter EmailId in Valid Format"})
+    
     if(!isValid(phone)) return res.status(400).send({status:false,message:"phone shouldnot be empty"})
     if(!isValidPh(phone)) return res.status(400).send({status:false,message:"Phone No.Should be valid INDIAN no."})
     if(!isValid(password)) return res.status(400).send({status:false,message:"password shouldnot be empty"})
@@ -49,7 +51,7 @@ const createUser=async function(req,res){
     let required1= ["street","city","pincode"]
     for(let i=0;i<required1.length;i++){
         if(!(required1[i] in address.billing)) return res.status(400).send({status:false,message:`${required1[i]} is required in Billing`})}
-   
+    
     if(!isValid(address.billing.street)) return res.status(400).send({status:false,message:"Street should not be empty in Billing"})
     if(!isValid(address.billing.city)) return res.status(400).send({status:false,message:"city should not be empty in Billing"})
     if(!isValidName(address.billing.city)) return res.status(400).send({status:false,message:"Pls Enter Valid City Name in Billing"})
@@ -61,38 +63,15 @@ const createUser=async function(req,res){
     if(await usermodel.findOne({phone})) return res.status(400).send({status:false,message:`${phone} is already exists`})
 
     data.password=await securepw(data.password)
-    aws.config.update({
-        accessKeyId: "AKIAY3L35MCRVFM24Q7U",
-        secretAccessKey: "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",
-        region: "ap-south-1"
-    })
-    
-    let uploadFile= async ( file) =>{
-       return new Promise( function(resolve, reject) {
-        let s3= new aws.S3({apiVersion: '2006-03-01'}); 
-        var uploadParams= {
-            ACL: "public-read",
-            Bucket: "classroom-training-bucket",  
-            Key: "abc/" + file.originalname, 
-            Body: file.buffer
-        }
-        s3.upload( uploadParams, function (err, data ){
-            if(err) {
-                return reject({"error": err})
-            }
-            console.log(data)
-            console.log("file uploaded succesfully")
-            return resolve(data.Location)
-        })
-       })
-    }
-    let files= req.files
     if(files && files.length>0){
+    if(!(isValidImg(files[0].mimetype))){
+        return res.status(400).send({status:false,message:"Image Should be of JPEG/ JPG/ PNG"})
+    }
     let uploadedFileURL= await uploadFile(files[0])
     data.profileImage =uploadedFileURL
     let saveddata= await usermodel.create(data)
     res.status(201).send({status:true,message:"Success",data:saveddata}) }
-    else{ res.status(400).send({ status:false,message: "No file found" })}
+    else{ res.status(400).send({ status:false,message: "profileImage is Required" })}
     }
     catch(err){
         return res.status(500).send({status:false,message:err.message})
