@@ -2,6 +2,7 @@ const usermodel = require("../models/userModel")
 const jwt = require("jsonwebtoken")
 const { isValid, isValidBody, isValidName, isValidMail, isValidImg, isValidPh, isValidPassword, comparePw, isValidPincode, isValidStreet, securepw, isValidObjectId } = require("../validation/validation")
 const { uploadFile } = require("../aws/aws")
+const { json } = require("body-parser")
 
 const createUser = async function (req, res) {
     try {
@@ -142,106 +143,120 @@ const getUser = async function (req, res) {
 const updateUser = async function (req, res) {
     try {
         let userId = req.params.userId
-        let data = req.body
+        let files=req.files
+        let data = JSON.parse(JSON.stringify(req.body))
         const { fname, lname, email, phone, password, address, profileImage } = data
 
+     //   if (Object.keys(userId).length==0) return res.status(400).send({ status: false, message: "Please enter userId" })
         if (!isValidObjectId(userId)) return res.status(400).send({ status: false, message: "Given id format is invalid" })
-        if(!(await usermodel.findById(userId))) return res.status(400).send({status:false,message:"This id doenot exists"})
+        let validId=await usermodel.findById(userId)
+        if (!validId) return res.status(404).send({ status: false, message: "No such user Exists" })
+        
+        
         if (isValidBody(data)) return res.status(400).send({ status: false, message: "Please enter some field for Upatation" })
         let user = await usermodel.findById(userId)
         if (!user) return res.status(400).send({ status: false, message: "We couldn't find data by given id" })
 
-        if (data.hasOwnProperty(fname)) {
-            if (!isValid(fname)) return res.status(400).send({ status: false, message: "fname shouldnot be empty" })
-            if (!isValidName(fname)) return res.status(400).send({ status: false, message: "Pls Enter Valid First Name" })
-            user.fname = fname
-        }
-
-        if (data.hasOwnProperty(lname)) {
-            if (!isValid(lname)) return res.status(400).send({ status: false, message: "lname shouldnot be empty" })
-            if (!isValidName(lname)) return res.status(400).send({ status: false, message: "Pls Enter Valid Last Name" })
-            user.lname = lname
-        }
-
-        if (data.hasOwnProperty(email)) {
-            if (!isValid(email)) return res.status(400).send({ status: false, message: "email shouldnot be empty" })
-            if (!isValidMail(email)) return res.status(400).send({ status: false, message: "Pls enter EmailId in Valid Format" })
-            if (await usermodel.findOne({ email: email })) return res.status(400).send({ status: false, message: `${email} is already exists` })
-            user.email = email
-        }
-
-        if (data.hasOwnProperty(phone)) {
-            if (!isValid(phone)) return res.status(400).send({ status: false, message: "phone shouldnot be empty" })
-            if (!isValidPh(phone)) return res.status(400).send({ status: false, message: "Phone No.Should be valid INDIAN no." })
-            if (await usermodel.findOne({ phone: phone })) return res.status(400).send({ status: false, message: `${phone} is already exists` })
-            user.phone = phone
-        }
-
-        if (data.hasOwnProperty(password)) {
-            if (!isValid(password)) return res.status(400).send({ status: false, message: "password shouldnot be empty" })
-            if (!isValidPassword(password)) return res.status(400).send({ status: false, message: "Password must be in 8-15 characters long and it should contains 1 Upper 1 lower 1 digit and 1 special character atleast" })
-            user.password = password
-        }
-        
-        if(data.hasOwnProperty(profileImage)){
-            if (files && files.length > 0) {
+        if(data.hasOwnProperty(files)){
+            if (files.length > 0) {
                 if (!(isValidImg(files[0].mimetype))) {
                     return res.status(400).send({ status: false, message: "Image Should be of JPEG/ JPG/ PNG" })
                 }
                 let uploadedFileURL = await uploadFile(files[0])
                 user.profileImage = uploadedFileURL
             }
-            else { res.status(400).send({ status: false, message: "profileImage is Required" }) }
+            else { return res.status(400).send({ status: false, message: "profileImage is Required" }) }
         }
+
+        if (data.hasOwnProperty("fname")) {
+            if (!isValid(fname)) return res.status(400).send({ status: false, message: "fname shouldnot be empty" })
+            if (!isValidName(fname)) return res.status(400).send({ status: false, message: "Pls Enter Valid First Name" })
+            user.fname = fname
+        }
+
+        if (data.hasOwnProperty("lname")) {
+            if (!isValid(lname)) return res.status(400).send({ status: false, message: "lname shouldnot be empty" })
+            if (!isValidName(lname)) return res.status(400).send({ status: false, message: "Pls Enter Valid Last Name" })
+            user.lname = lname
+        }
+
+        if (data.hasOwnProperty("email")) {
+            if (!isValid(email)) return res.status(400).send({ status: false, message: "email shouldnot be empty" })
+            if (!isValidMail(email)) return res.status(400).send({ status: false, message: "Pls enter EmailId in Valid Format" })
+            if (await usermodel.findOne({ email: email })) return res.status(400).send({ status: false, message: `${email} is already exists` })
+            user.email = email
+        }
+
+        if (data.hasOwnProperty("phone")) {
+            if (!isValid(phone)) return res.status(400).send({ status: false, message: "phone shouldnot be empty" })
+            if (!isValidPh(phone)) return res.status(400).send({ status: false, message: "Phone No.Should be valid INDIAN no." })
+            if (await usermodel.findOne({ phone: phone })) return res.status(400).send({ status: false, message: `${phone} is already exists` })
+            user.phone = phone
+        }
+
+        if (data.hasOwnProperty("password")) {
+            if (!isValid(password)) return res.status(400).send({ status: false, message: "password shouldnot be empty" })
+            if (!isValidPassword(password)) return res.status(400).send({ status: false, message: "Password must be in 8-15 characters long and it should contains 1 Upper 1 lower 1 digit and 1 special character atleast" })
+            let pass= await usermodel.findById(userId)
+            let duplicate=await comparePw(password,pass.password)
+            if(duplicate)return res.status(400).send({status:false,message:"You cannot use the previously used password"})
+            let secure=await securepw(password)
+            user.password = secure
+        }
+        
+      
         //——————————————————————————————Address Validations
-        if (data.hasOwnProperty(address)) {
+        if (data.hasOwnProperty("address")) {
             if (typeof address === "string") return res.status(400).send({ status: false, message: "Address should be an Object" })
             if (typeof address === "object") {
                 if (isValidBody(address)) return res.status(400).send({ status: false, message: "Address Should not be empty" })
-                if (address.hasOwnProperty(shipping)) {
-                    if (typeof shipping === "string") return res.status(400).send({ status: false, message: "Shipping should be an Object" })
-                    if (typeof shipping === "object") {
-                        if (isValidBody(shipping)) return res.status(400).send({ status: false, message: "Shipping Should be not empty" })
-                        if (shipping.hasOwnProperty(street)) {
-                            if (!isValid(street)) return res.status(400).send({ status: false, message: "Street Should Not Be empty" })
-                            user.address.shipping.street = street
+                if (address.hasOwnProperty("shipping")) {
+                    if (typeof address.shipping === "string") return res.status(400).send({ status: false, message: "Shipping should be an Object" })
+                    if (typeof address.shipping === "object") {
+                        if (isValidBody(address.shipping)) return res.status(400).send({ status: false, message: "Shipping Should be not empty" })
+                        if (address.shipping.hasOwnProperty("street")) {
+                            if (!isValid(address.shipping.street)) return res.status(400).send({ status: false, message: "Street Should Not Be empty" })
+                            user.address.shipping.street = address.shipping.street
                         }
-                        if (shipping.hasOwnProperty(city)) {
-                            if (!isValid(city)) return res.status(400).send({ status: false, message: "City Should not be empty" })
-                            if (!isValidName(city)) return res.status(400).send({ status: false, message: "Pls Enter Valid city name" })
-                            user.address.shipping.city = city
+                        if (address.shipping.hasOwnProperty("city")) {
+                            if (!isValid(address.shipping.city)) return res.status(400).send({ status: false, message: "City Should not be empty" })
+                            if (!isValidName(address.shipping.city)) return res.status(400).send({ status: false, message: "Pls Enter Valid city name" })
+                            user.address.shipping.city = address.shipping.city
                         }
-                        if (shipping.hasOwnProperty(pincode)) {
-                            if (!isValid(pincode)) return res.status(400).send({ status: false, message: "Pincode should not be empty" })
-                            if (!isValidPincode(pincode)) return res.status(400).send({ status: false, message: "Enter Pan Pincode" })
-                            user.address.shipping.pincode = pincode
+                        if (address.shipping.hasOwnProperty("pincode")) {
+                            if (!isValid(address.shipping.pincode)) return res.status(400).send({ status: false, message: "Pincode should not be empty" })
+                            if (!isValidPincode(address.shipping.pincode)) return res.status(400).send({ status: false, message: "Enter a valid Indian Pincode" })
+                            let trim=address.shipping.pincode.trim()
+                            user.address.shipping.pincode = trim
                         }
                     }
                 }
-                if (address.hasOwnProperty(billing)) {
-                    if (typeof billing === "string") return res.status(400).send({ status: false, message: "Billing Should be an object" })
-                    if (typeof billing === "object") {
-                        if (billing.hasOwnProperty(street)) {
-                            if (!isValid(street)) return res.status(400).send({ status: false, message: "Street Should Not Be empty" })
-                            user.address.billing.street = street}
-                        if(billing.hasOwnProperty(city)){
-                            if (!isValid(city)) return res.status(400).send({ status: false, message: "City Should not be empty" })
-                            if (!isValidName(city)) return res.status(400).send({ status: false, message: "Pls Enter Valid city name" })
-                            user.address.billing.city = city
+                if (address.hasOwnProperty("billing")) {
+                    if (typeof address.billing === "string") return res.status(400).send({ status: false, message: "Billing Should be an object" })
+                    if (typeof address.billing === "object") {
+                        if(isValidBody(address.billing))return res.status(400).send({status:false,message:"Billing should not be empty"})
+                        if (address.billing.hasOwnProperty("street")) {
+                            if (!isValid(address.billing.street)) return res.status(400).send({ status: false, message: "Street Should Not Be empty" })
+                            user.address.billing.street = address.billing.street
                         }
-                        if(billing.hasOwnProperty(pincode)){
-                            if (!isValid(pincode)) return res.status(400).send({ status: false, message: "Pincode should not be empty" })
-                            if (!isValidPincode(pincode)) return res.status(400).send({ status: false, message: "Enter Pan Pincode" })
-                            user.address.billing.pincode = pincode
+                        if(address.billing.hasOwnProperty("city")){
+                            if (!isValid(address.billing.city)) return res.status(400).send({ status: false, message: "City Should not be empty" })
+                            if (!isValidName(address.billing.city)) return res.status(400).send({ status: false, message: "Pls Enter Valid city name" })
+                            user.address.billing.city = address.billing.city
+                        }
+                        if(address.billing.hasOwnProperty("pincode")){
+                            if (!isValid(address.billing.pincode)) return res.status(400).send({ status: false, message: "Pincode should not be empty" })
+                            if (!isValidPincode(address.billing.pincode)) return res.status(400).send({ status: false, message: "Enter Pan Pincode" })
+                            user.address.billing.pincode = address.billing.pincode
                         }
                     }
                 }
             }
         }
-       let saveddata= user.save()
-     return res.status(201).send({ status: true, message: saveddata })
+        user.save()
+     return res.status(201).send({ status: true, message: "updated Successfully" ,data:user})
 } catch (error) {
-    // consol.log(error)
+    //  console.log(error)
     return res.status(500).send({ status: false, message: error.message })
 
 }
