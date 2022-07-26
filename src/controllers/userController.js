@@ -99,7 +99,7 @@ const loginUser= async(req,res)=>{
 
     if(!(await comparePw(password,user.password))){return res.status(400).send({status:false,message:"Invalid Credentials "})}
       
-    let token=jwt.sign({userId:user._id},"project5@sss123",{expiresIn:"1m"}) 
+    let token=jwt.sign({userId:user._id.toString()},"project5@sss123" ,{expiresIn:"1m"}) 
     
         res.status(200).send({status: true,
         message: "User login successfull",
@@ -118,8 +118,6 @@ const loginUser= async(req,res)=>{
     
    
     let data=req.params.userId
-
-   if(data.userId==undefined || null) return res.status(400).send({status:false,message:"pleas enter user id in the params"})
    if(!isValidObjectId(data)) return res.status(400).send({status:false,message:"Given id format is invalid"})
 
 
