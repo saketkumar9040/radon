@@ -99,7 +99,7 @@ const loginUser= async(req,res)=>{
 
     if(!(await comparePw(password,user.password))){return res.status(400).send({status:false,message:"Invalid Credentials "})}
       
-    let token=jwt.sign({userId:user._id},"project5@sss123",{expiresIn:"1m"}) 
+    let token=jwt.sign({userId:user._id.toString()},"project5@sss123" ,{expiresIn:"1m"}) 
     
         res.status(200).send({status: true,
         message: "User login successfull",
@@ -118,8 +118,6 @@ const loginUser= async(req,res)=>{
     
    
     let data=req.params.userId
-
-   if(data.userId==undefined || null) return res.status(400).send({status:false,message:"pleas enter user id in the params"})
    if(!isValidObjectId(data)) return res.status(400).send({status:false,message:"Given id format is invalid"})
 
 
@@ -138,30 +136,83 @@ const loginUser= async(req,res)=>{
 
 
    const updateUser=async function(req,res){
+    try {
+        
+    
     let userId=req.params.userId
     let data=req.body
-    
-    if(userId.userId==undefined || null) return res.status(400).send({status:false,message:"pleas enter user id in the params"})
+    const {fname,lname,email,phone,password,address,profileImage}= data
+   // if(userId.userId==undefined || null) return res.status(400).send({status:false,message:"pleas enter user id in the params"})
+   
     if(!isValidObjectId(userId)) return res.status(400).send({status:false,message:"Given id format is invalid"})
- 
-    let findParams=await usermodel.findOne({userId})
-    if(!findParams) return res.status(400).send({status:false,message:"We couldn't find data by given id"})
-
-    
+    if(isValidBody(data)) return res.status(400).send({status:false,message:"Please enter some field for Upatation"})
+    let user=await usermodel.findById(userId)
+    if(!user) return res.status(400).send({status:false,message:"We couldn't find data by given id"})
 
     if(data.hasOwnProperty(fname)){
     if(!isValid(fname)) return res.status(400).send({status:false,message:"fname shouldnot be empty"})
     if(!isValidName(fname)) return res.status(400).send({status:false,message:"Pls Enter Valid First Name"})
+    user.fname=fname
     }
-
+     
+    if(data.hasOwnProperty(lname)){
     if(!isValid(lname)) return res.status(400).send({status:false,message:"lname shouldnot be empty"})
     if(!isValidName(lname)) return res.status(400).send({status:false,message:"Pls Enter Valid Last Name"})
+     user.lname=lname
+    }
 
+    if(data.hasOwnProperty(email)){
     if(!isValid(email)) return res.status(400).send({status:false,message:"email shouldnot be empty"})
     if(!isValidMail(email)) return res.status(400).send({status:false,message:"Pls enter EmailId in Valid Format"})
-    
-      
-   }
+    if(await usermodel.findOne({email:email})) return res.status(400).send{{}}
+      }
 
+
+    if(data.hasOwnProperty(phone)){
+    if(!isValid(phone)) return res.status(400).send({status:false,message:"phone shouldnot be empty"})
+    if(!isValidPh(phone)) return res.status(400).send({status:false,message:"Phone No.Should be valid INDIAN no."})
+    }
+
+    if(data.hasOwnProperty(password)){
+    if(!isValid(password)) return res.status(400).send({status:false,message:"password shouldnot be empty"})
+    if(!isValidPassword(password)) return res.status(400).send({status:false,message:"Password must be in 8-15 characters long and it should contains 1 Upper 1 lower 1 digit and 1 special character atleast"})
+    }
+    
+    
+    //——————————————————————————————Address Validations
+    if(data.hasOwnProperty(address)){
+    if(typeof address=== "string") return res.status(400).send({status:false,message:"Address should be an Object"})
+    if (typeof address==="object"){
+    if(isValidBody(address)) return res.status(400).send({status:false,message:"Address Should not be empty"})
+    if(!("shipping" in address)) return res.status(400).send({status:false,message:"Shipping is required in address"})
+    if(typeof address.shipping=== "string") return res.status(400).send({status:false,message:"Shipping in Address Should be an object"})
+    if(isValidBody(address.shipping)) return res.status(400).send({status:false,message:"Shipping Should not be empty"})
+    }
+
+    
+   // let required1= ["street","city","pincode"]
+    //for(let i=0;i<required1.length;i++){
+      //  if(!(required1[i] in address.billing)) return res.status(400).send({status:false,message:`${required1[i]} is required in Billing`})}
+      if(data.hasOwnProperty(data.billing)){
+    if(!isValid(address.billing.street)) return res.status(400).send({status:false,message:"Street should not be empty in Billing"})
+    if(!isValid(address.billing.city)) return res.status(400).send({status:false,message:"city should not be empty in Billing"})
+    if(!isValidName(address.billing.city)) return res.status(400).send({status:false,message:"Pls Enter Valid City Name in Billing"})
+    if(!isValid(address.billing.pincode)) return res.status(400).send({status:false,message:"Pincode should not be empty in Billing"})
+    if(!isValidPincode(address.billing.pincode)) return res.status(400).send({status:false,message:"Pls Enter Valid PAN PINCODE in Billing"})
+    }
+   } 
+   //data.updatedAt=new Date()
+   
+  
+   let saveddata=await usermodel.findOneAndUpdate({_id:userId},data,{new:true})
+   console.log(data)
+   return res.status(201).send({status:true,message:saveddata}) 
+} catch (error) {
+   // consol.log(error)
+    return res.status(500).send({status:false,message:error.message})
+        
+}
+   }
+  
 
 module.exports={createUser,loginUser,getUser,updateUser}
