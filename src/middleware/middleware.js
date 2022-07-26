@@ -11,10 +11,10 @@ const auth= async function(req,res,next){
             if (Date.now() > decoded.exp * 1000) {
                 return res.status(401).send({ status: false, message: "Session Expired" });
             }
-            req.DecodedId=decodeToken.userId
         }
+        req.DecodedId=decodeToken.userId
+        next()
      })
-     
 }
 
 module.exports={auth}
