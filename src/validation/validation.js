@@ -58,4 +58,4 @@ const isValidImg=(img)=>{
     if(/[^\s]+(\.(?i)(jpg|png|gif|bmp))$/.test(img))
     return true
 }
-module.exports={isValid,isValidStreet,isValidPincode,isValidPassword,isValidPh,isValidMail,isValidName,isValidBody,securepw,comparePw,isValidImg}
+module.exports={isValid,isValidStreet,isValidPincode,isValidPassword,isValidPassword,isValidPh,isValidMail,isValidName,isValidBody,securepw,comparePw,isValidImg}

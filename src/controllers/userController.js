@@ -1,6 +1,9 @@
 const usermodel= require("../models/userModel")
-const { isValid, isValidBody, isValidName, isValidMail, isValidImg, isValidPh, isValidPassword, isValidPincode, isValidStreet, securepw } = require("../validation/validation")
+const bcrypt=require("bcrypt")
 const aws= require("aws-sdk")
+const jwt=require("jsonwebtoken")
+const { isValid, isValidBody, isValidName, isValidMail, isValidImg, isValidPh, isValidPassword, isValidPincode, isValidStreet, securepw ,comparePw} = require("../validation/validation")
+
 
 const createUser=async function(req,res){
     try{
@@ -99,12 +102,36 @@ const createUser=async function(req,res){
     }
 }
 
+const loginUser= async(req,res)=>{
+    try{
+    let data=req.body 
+        if(isValidBody(data)){
+        return res.status(400).send({status:false,message:"Body Should Not Be Empty "})
+        }
+        let {password,email}=data
+        if(!("email" in data))return res.status(400).send({status:false,message:"Email Is Required"})
+        if(!("password" in data))return res.status(400).send({status:false,message:"Password Is Required"})
+    
+    
+    if(!isValid(email)){return res.status(400).send({status:false,message:"Email Id Cannot Be Empty"})}
+    if(!isValid(password)){return res.status(400).send({status:false,message:" Password Cannot Be Empty"})}
+    
+    let user = await usermodel.findOne({email:email}).select({password:1,_id:1,email:1})
+    if(!user){return res.status(401).send({status:false,message:"This Email Id Doesn't Exists"})}
 
+    if(!(await comparePw(password,user.password))){return res.status(400).send({status:false,message:"Invalid Credentials "})}
+      
+    let token=jwt.sign({userId:user._id},"project5@sss123",{expiresIn:"600s"}) 
+    
+        res.status(200).send({status: true,
+        message: "User login successfull",
+        data: {userId:user._id,
+        token:token}})
+    }
+    catch(err){
+        return res.status(500).send({status:false,message:err.message})  
+       }
+    }
+    
 
-
-
-
-
-
-
-module.exports={createUser}
+module.exports={createUser,loginUser}
