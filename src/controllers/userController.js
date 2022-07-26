@@ -99,7 +99,7 @@ const loginUser= async(req,res)=>{
 
     if(!(await comparePw(password,user.password))){return res.status(400).send({status:false,message:"Invalid Credentials "})}
       
-    let token=jwt.sign({userId:user._id.toString()},"project5@sss123" ,{expiresIn:"1m"}) 
+    let token=jwt.sign({userId:user._id.toString()},"project5@sss123" ,{expiresIn:"10m"}) 
     
         res.status(200).send({status: true,
         message: "User login successfull",
@@ -116,11 +116,8 @@ const loginUser= async(req,res)=>{
    const getUser=async function(req,res){
    try {
     
-   
     let data=req.params.userId
    if(!isValidObjectId(data)) return res.status(400).send({status:false,message:"Given id format is invalid"})
-
-
    let findParams=await usermodel.findOne({data})
    if(!findParams) return res.status(400).send({status:false,message:"We couldn't find data by given id"})
 
@@ -215,4 +212,11 @@ const loginUser= async(req,res)=>{
    }
   
 
-module.exports={createUser,loginUser,getUser,updateUser}
+
+
+
+   
+const notFound=async function(req,res){
+    res.status(404).send({ status: false, message: "Route not found" })
+}
+module.exports={createUser,loginUser,getUser,updateUser,notFound}
