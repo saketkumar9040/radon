@@ -1,5 +1,6 @@
 const usermodel= require("../models/userModel")
-const { isValid, isValidBody, isValidName, isValidMail, isValidImg, isValidPh, isValidPassword, isValidPincode, isValidStreet, securepw ,isValidObjectId} = require("../validation/validation")
+const jwt=require("jsonwebtoken")
+const { isValid, isValidBody, isValidName, isValidMail, isValidImg, isValidPh, isValidPassword,comparePw, isValidPincode, isValidStreet, securepw ,isValidObjectId} = require("../validation/validation")
 const {uploadFile}=require("../aws/aws")
 const { default: mongoose } = require("mongoose")
 
@@ -98,7 +99,7 @@ const loginUser= async(req,res)=>{
 
     if(!(await comparePw(password,user.password))){return res.status(400).send({status:false,message:"Invalid Credentials "})}
       
-    let token=jwt.sign({userId:user._id},"project5@sss123",{expiresIn:"600s"}) 
+    let token=jwt.sign({userId:user._id},"project5@sss123",{expiresIn:"1m"}) 
     
         res.status(200).send({status: true,
         message: "User login successfull",
@@ -106,6 +107,7 @@ const loginUser= async(req,res)=>{
         token:token}})
     }
     catch(err){
+        console.log(err)
         return res.status(500).send({status:false,message:err.message})  
        }
     }
