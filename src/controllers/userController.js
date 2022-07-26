@@ -146,6 +146,7 @@ const updateUser = async function (req, res) {
         const { fname, lname, email, phone, password, address, profileImage } = data
 
         if (!isValidObjectId(userId)) return res.status(400).send({ status: false, message: "Given id format is invalid" })
+        if(!(await usermodel.findById(userId))) return res.status(400).send({status:false,message:"This id doenot exists"})
         if (isValidBody(data)) return res.status(400).send({ status: false, message: "Please enter some field for Upatation" })
         let user = await usermodel.findById(userId)
         if (!user) return res.status(400).send({ status: false, message: "We couldn't find data by given id" })
