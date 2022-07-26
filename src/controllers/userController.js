@@ -1,7 +1,8 @@
 const usermodel= require("../models/userModel")
-const { isValid, isValidBody, isValidName, isValidMail, isValidImg, isValidPh, isValidPassword, isValidPincode, isValidStreet, securepw } = require("../validation/validation")
+const jwt=require("jsonwebtoken")
+const { isValid, isValidBody, isValidName, isValidMail, isValidImg, isValidPh, isValidPassword,comparePw, isValidPincode, isValidStreet, securepw ,isValidObjectId} = require("../validation/validation")
 const {uploadFile}=require("../aws/aws")
-const jwt= require("jsonwebtoken")
+const { default: mongoose } = require("mongoose")
 
 const createUser=async function(req,res){
     try{
@@ -98,7 +99,7 @@ const loginUser= async(req,res)=>{
 
     if(!(await comparePw(password,user.password))){return res.status(400).send({status:false,message:"Invalid Credentials "})}
       
-    let token=jwt.sign({userId:user._id},"project5@sss123",{expiresIn:"600s"}) 
+    let token=jwt.sign({userId:user._id},"project5@sss123",{expiresIn:"1m"}) 
     
         res.status(200).send({status: true,
         message: "User login successfull",
@@ -106,9 +107,53 @@ const loginUser= async(req,res)=>{
         token:token}})
     }
     catch(err){
+        console.log(err)
         return res.status(500).send({status:false,message:err.message})  
        }
     }
     
 
-module.exports={createUser,loginUser}
+   const getUser=async function(req,res){
+   try {
+    
+   
+    let data=req.params.userId
+
+   if(data.userId==undefined || null) return res.status(400).send({status:false,message:"pleas enter user id in the params"})
+   if(!isValidObjectId(data)) return res.status(400).send({status:false,message:"Given id format is invalid"})
+
+
+   let findParams=await usermodel.findOne({data})
+   if(!findParams) return res.status(400).send({status:false,message:"We couldn't find data by given id"})
+
+    res.status(200).send({status:true,message:findParams})
+
+   }
+ catch (error) { return res.status(500).send({status:false,message:error.message})
+    
+   }
+
+   }
+
+
+
+   const updateUser=async function(req,res){
+    let userId=req.params.userId
+    
+
+    if(userId.userId==undefined || null) return res.status(400).send({status:false,message:"pleas enter user id in the params"})
+    if(!isValidObjectId(userId)) return res.status(400).send({status:false,message:"Given id format is invalid"})
+ 
+    let findParams=await usermodel.findOne({userId})
+    if(!findParams) return res.status(400).send({status:false,message:"We couldn't find data by given id"})
+
+
+
+    
+
+    
+      
+   }
+
+
+module.exports={createUser,loginUser,getUser,updateUser}
