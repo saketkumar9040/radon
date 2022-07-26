@@ -1,10 +1,10 @@
 const jwt= require("jsonwebtoken")
 
 const auth= async function(req,res,next){
-     const bearerheader= req.headers.Authorization
-     if(typeof bearerheader=="undefined" || typeof bearerheader=="null"){
-      return res.status(401).send({status:false,message:"Token Must Be present"})
-     }
+     const bearerheader= req.Token
+      if(typeof bearerheader=="undefined" || typeof bearerheader=="null"){
+       return res.status(401).send({status:false,message:"Token Must Be present"})
+      }
      let bearerToken=bearerheader.split(" ")
      let token=bearerToken[0]
       let decodeToken=jwt.verify(token,"project5@sss123",function(err,decode){
