@@ -8,6 +8,11 @@ const isValid =(value)=>{
     return true
 }
 
+const isValidObjectId=(body)=>{
+    if(mongoose.isValidObjectId(body))
+    return true
+}
+
 const isValidBody=(body)=>{
     if(Object.keys(body).length==0)
     return true
@@ -58,4 +63,4 @@ const isValidImg=(img)=>{
     const reg = /image\/png|image\/jpeg|image\/jpg/;
     return reg.test(img)
 }
-module.exports={isValid,isValidStreet,isValidPincode,isValidPassword,isValidPassword,isValidPh,isValidMail,isValidName,isValidBody,securepw,comparePw,isValidImg}
+module.exports={isValid,isValidStreet,isValidPincode,isValidPassword,isValidPassword,isValidPh,isValidMail,isValidName,isValidBody,securepw,comparePw,isValidImg,isValidObjectId}

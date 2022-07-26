@@ -1,6 +1,7 @@
 const usermodel= require("../models/userModel")
-const { isValid, isValidBody, isValidName, isValidMail, isValidImg, isValidPh, isValidPassword, isValidPincode, isValidStreet, securepw } = require("../validation/validation")
+const { isValid, isValidBody, isValidName, isValidMail, isValidImg, isValidPh, isValidPassword, isValidPincode, isValidStreet, securepw ,isValidObjectId} = require("../validation/validation")
 const {uploadFile}=require("../aws/aws")
+const { default: mongoose } = require("mongoose")
 
 const createUser=async function(req,res){
     try{
@@ -110,4 +111,47 @@ const loginUser= async(req,res)=>{
     }
     
 
-module.exports={createUser,loginUser}
+   const getUser=async function(req,res){
+   try {
+    
+   
+    let data=req.params.userId
+
+   if(data.userId==undefined || null) return res.status(400).send({status:false,message:"pleas enter user id in the params"})
+   if(!isValidObjectId(data)) return res.status(400).send({status:false,message:"Given id format is invalid"})
+
+
+   let findParams=await usermodel.findOne({data})
+   if(!findParams) return res.status(400).send({status:false,message:"We couldn't find data by given id"})
+
+    res.status(200).send({status:true,message:findParams})
+
+   }
+ catch (error) { return res.status(500).send({status:false,message:error.message})
+    
+   }
+
+   }
+
+
+
+   const updateUser=async function(req,res){
+    let userId=req.params.userId
+    
+
+    if(userId.userId==undefined || null) return res.status(400).send({status:false,message:"pleas enter user id in the params"})
+    if(!isValidObjectId(userId)) return res.status(400).send({status:false,message:"Given id format is invalid"})
+ 
+    let findParams=await usermodel.findOne({userId})
+    if(!findParams) return res.status(400).send({status:false,message:"We couldn't find data by given id"})
+
+
+
+    
+
+    
+      
+   }
+
+
+module.exports={createUser,loginUser,getUser,updateUser}
