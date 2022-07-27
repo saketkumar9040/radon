@@ -48,6 +48,10 @@ const isValidStreet =(street)=>{
     return true
 }
 
+const isValidCurrency =(curr)=>{
+    if(/^(\d{1,3})(,\d{1,3})*(\.\d{1,})?$/.test(curr))
+    return true
+}
 
 const securepw= async (pw)=>{
 let saltrounds=10
@@ -63,4 +67,16 @@ const isValidImg=(img)=>{
     const reg = /image\/png|image\/jpeg|image\/jpg/;
     return reg.test(img)
 }
-module.exports={isValid,isValidStreet,isValidPincode,isValidPassword,isValidPassword,isValidPh,isValidMail,isValidName,isValidBody,securepw,comparePw,isValidImg,isValidObjectId}
+
+const isValidSize=(size)=>{
+    if(size=="S"|| size=="XS"||size=="M"||size=="X "||size=="L"||size=="XXL"||size== "XL")
+    return true
+}
+
+const isValidTName = (name) => {
+    let tName = name.trim()
+    if (/^[A-Za-z0-9]+[A-Za-z0-9\u00C0-\u017F-' ]*$/.test(tName))
+        return true
+}
+
+module.exports={isValid,isValidStreet,isValidPincode,isValidPassword,isValidPassword,isValidPh,isValidMail,isValidName,isValidBody,securepw,comparePw,isValidImg,isValidObjectId,isValidCurrency,isValidSize,isValidTName}

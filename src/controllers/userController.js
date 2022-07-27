@@ -204,7 +204,8 @@ const updateUser = async function (req, res) {
         // //——————————————————————————————Address Validations
          if ("address" in data) {
             if (typeof address === "string") return res.status(400).send({ status: false, message: "Address should be an Object" })
-            if (typeof address === "object") {
+            if (typeof address === JSON) {
+                if(isValidBody(address)){return res.status(400).send({status:false,message:"address empty"})}
                 const {shipping,billing}= data.address
                 if ("shipping" in address) {
                     if (typeof shipping === "string") return res.status(400).send({ status: false, message: "Shipping should be an Object" })
