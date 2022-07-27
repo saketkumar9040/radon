@@ -200,15 +200,16 @@ const updateUser = async function (req, res) {
             user.password = secure
         }
         
-      
         // //——————————————————————————————Address Validations
          if ("address" in data) {
             if (typeof address === "string") return res.status(400).send({ status: false, message: "Address should be an Object" })
             if (typeof address === "object") {
+                if(!("shipping"  in address) && !("billing" in address) )return res.status(400).send({status:false,message:"Pls Provide Atleast Billing And Shipping to update"})
                 const {shipping,billing}= data.address
                 if ("shipping" in address) {
                     if (typeof shipping === "string") return res.status(400).send({ status: false, message: "Shipping should be an Object" })
                     if (typeof address.shipping === "object") {
+                        if(!("street" in shipping) && !("city" in shipping) && !("pincode" in shipping) )return res.status(400).send({status:false,message:"Pls Provide Anyone ('STREET','CITY','PINCODE') in Shipping to update"})
                       const {street,city,pincode} = shipping
                         if ("street" in shipping) {
                             if (!isValid(street)) return res.status(400).send({ status: false, message: "Street Should Not Be empty" })
@@ -229,6 +230,7 @@ const updateUser = async function (req, res) {
                 if ("billing" in address) {
                     if (typeof billing === "string") return res.status(400).send({ status: false, message: "Billing Should be an object" })
                     if (typeof billing === "object") {
+                        if(!("street" in billing) && !("city" in billing) && !("pincode" in billing) )return res.status(400).send({status:false,message:"Pls Provide Anyone ('STREET','CITY','PINCODE') in Billing to update"})
                         const {street,city,pincode} = billing
                         if ("street" in billing) {
                             if (!isValid(street)) return res.status(400).send({ status: false, message: "Street in Billing Should Not Be empty" })
