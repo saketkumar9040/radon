@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const {createUser, loginUser, getUser,notFound, updateUser}=require("../controllers/userController")
-const{ createProduct}=require("../controllers/productController")
+const{ createProduct,getProductById,delProductById}=require("../controllers/productController")
 const { authen,author} = require("../middleware/middleware")
 
 
@@ -15,7 +15,8 @@ router.put("/user/:userId/profile",updateUser)
 ///////////////////////////////////   PRODUCT  API   /////////////////////////////////////////////////////////////////
 
 router.post("/products",createProduct)
-
+router.get("/products/:productId",getProductById)
+router.delete("/products/:productId",delProductById)
 
 
  router.all("\*",notFound)

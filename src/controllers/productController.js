@@ -1,17 +1,13 @@
 const productModel=require("../models/productModel")
-const { isValid, isValidBody,isValidCurrency ,isValidSize,isValidTName,isValidImg, isValidName} = require("../validation/validation")
+const { isValid, isValidBody,isValidCurrency ,isValidSize,isValidTName,isValidImg, isValidName, isValidObjectId} = require("../validation/validation")
 const { uploadFile } = require("../aws/aws")
 
 const createProduct= async (req,res)=>{
     try{
-
     let data =req.body 
     let files=req.files
     if(isValidBody(data)){return res.status(400).send({status:false,message:"Body Should Not Be Empty"})}
     let{title,description,price,currencyId, currencyFormat,style,availableSizes}=data
-
-   
-   
 
     let arr=["title","description","price","availableSizes","style"]
         for (let i = 0; i < arr.length; i++) {
@@ -60,6 +56,34 @@ data.deletedAt=null
 }
 }
 
-module.exports={createProduct}
+//—————————————————————————————————————————getProductById————————————————————————————————————————————————————————————————————————
+
+const getProductById= async function(req,res){
+    let id= req.params.productId
+    if(!isValidObjectId(id)) return res.status(400).send({status:false,message:"Enter Id in valid Format"})
+    
+    let data= await productModel.findById(id)
+    if(!data) return res.status(400).send({status:false,message:"No Data found wih this ID"})
+    if(data.isDeleted == true){return res.status(400).send({status:false,message:"This product is Deleted"})}
+    res.status(200).send({status:true,data:data})
+}
+
+const delProductById=async function(req,res){
+    let id= req.params.productId
+    if(!isValidObjectId(id)) return res.status(400).send({status:false,message:"Enter Id in valid Format"})
+    
+    let data= await productModel.findById(id)
+    if(!data) return res.status(400).send({status:false,message:"No Data found wih this ID"})
+    if(data.isDeleted == true){return res.status(400).send({status:false,message:"This product is already Deleted"})}
+
+    date=new Date().toISOString()
+    await productModel.findOneAndUpdate({_id:id},{isDeleted:true,deletedAt:date})
+
+    res.status(200).send({status:true,message:"Product is deleted Successfully"})
+
+}
+
+
+module.exports={createProduct,getProductById,delProductById}
 
       
