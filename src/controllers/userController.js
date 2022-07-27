@@ -157,7 +157,7 @@ const updateUser = async function (req, res) {
             }
             let uploadedFileURL = await uploadFile(files[0])
             user.profileImage = uploadedFileURL
-        }.
+        }
         if(!files){
         if (isValidBody(data)) return res.status(400).send({ status: false, message: "Please enter some field for Upatation" })
         }
