@@ -20,8 +20,8 @@ const createProduct= async (req,res)=>{
     
     if(!isValid(description))return res.status(400).send({ status: false, message: `Description should not be empty` })
 
-    if(!isValid(price))return res.status(400).send({ status: false, message: `price should not be empty` })
-    if (isNaN(parseInt(price))) {return res.status(400).send({status: false,  message: "price should be Number" })}    
+    if(!isValid(price))return res.status(400).send({ status: false, message: `price should not be empty` })   
+    if(isNaN(parseInt(price))) return res.status(400).send({status:false,message:"Price Should Be A Number"})
     if(currencyId){
       if( currencyId!="INR") return res.status(400).send({ status: false, message: `Currency Id should Be INR` })}
       data.currencyId="INR"
@@ -57,6 +57,7 @@ data.deletedAt=null
 const updateProduct= async function(req,res){
     try{
     let id= req.params.productId
+    if(id.length ==0 || id==':productId') return res.status(400).send({status:false,message:"Please enter productId in params"})
     if(!isValidObjectId(id)) return res.status(400).send({status:false,message:"Enter Id in valid Format"})
     
     let data= await productModel.findById(id)
@@ -68,17 +69,7 @@ const updateProduct= async function(req,res){
     if(!files){
     if(isValidBody(body)) return res.status(400).send({status:false,message:"Pls enter Some Data To update"})
     }
-    let {title,description,price,productImage,style,availableSizes,installments} = body
-//     title: {string, mandatory, unique},
-//   description: {string, mandatory},
-//   price: {number, mandatory, valid number/decimal},
-//   currencyId: {string, mandatory, INR},
-//   currencyFormat: {string, mandatory, Rupee symbol},
-//   isFreeShipping: {boolean, default: false},
-//   productImage: {string, mandatory},  // s3 link
-//   style: {string},
-//   availableSizes: {array of string, at least one size, enum["S", "XS","M","X", "L","XXL", "XL"]},
-//   installments: {number},
+    let {title,description,price,productImage,style,availableSizes,installments,isFreeShipping} = body
  
      if("title" in body){
         if(!isValid(title)) return res.status(400).send({status:false,message:"Title should not be empty"})
@@ -92,11 +83,13 @@ const updateProduct= async function(req,res){
      }
      if("price" in body){
         if(!isValid(price)) return res.status(400).send({status:false,message:"Price should not be empty"})
+        if(isNaN(parseInt(price))) return res.status(400).send({status:false,message:"Price Should Be A Number"})
         data.price=price
      }
+
      if("isFreeShipping" in body){
         if(!isValid(isFreeShipping)) return res.status(400).send({status:false,message:"isFreeShipping should not be empty"})
-        if(typeof isFreeShipping !== "boolean") return res.status(400).send({status:false,message:"isFreeShipping should be only True False"})
+        if(!(isFreeShipping === "true" || isFreeShipping === "false")) return res.status(400).send({status:false,message:"isFreeShipping should be only True False"})
         data.isFreeShipping=isFreeShipping
      }
      if (files && files.length > 0) {
@@ -138,7 +131,7 @@ const updateProduct= async function(req,res){
 
 
 
-//—————————————————————————————————————————getProductById————————————————————————————————————————————————————————————————————————
+//—————————————————————————————————————————getProductById————————————————————————————————————————————————————————
 
 const getProductById= async function(req,res){
     let id= req.params.productId
@@ -150,7 +143,8 @@ const getProductById= async function(req,res){
     if(data.isDeleted == true){return res.status(404).send({status:false,message:"This product is Deleted"})}
     res.status(200).send({status:true,data:data})
 }
-//—————————————————————————————————————————delProductById————————————————————————————————————————————————————————————————————————
+
+//—————————————————————————————————————————delProductById————————————————————————————————————————————————
 
 const delProductById=async function(req,res){
     let id= req.params.productId
