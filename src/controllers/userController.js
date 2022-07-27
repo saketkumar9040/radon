@@ -98,9 +98,9 @@ const loginUser = async (req, res) => {
         if (!isValid(password)) { return res.status(400).send({ status: false, message: " Password Cannot Be Empty" }) }
 
         let user = await usermodel.findOne({ email: email }).select({ password: 1, _id: 1, email: 1 })
-        if (!user) { return res.status(401).send({ status: false, message: "This Email Id Doesn't Exists" }) }
+        if (!user) { return res.status(404).send({ status: false, message: "This Email Id Doesn't Exists" }) }
 
-        if (!(await comparePw(password, user.password))) { return res.status(400).send({ status: false, message: "Invalid Credentials " }) }
+        if (!(await comparePw(password, user.password))) { return res.status(401).send({ status: false, message: "Invalid Credentials " }) }
 
         let token = jwt.sign({ userId: user._id.toString() }, "project5@sss123", { expiresIn: "10m" })
 
@@ -126,7 +126,7 @@ const getUser = async function (req, res) {
         let data = req.params.userId
         if (!isValidObjectId(data)) return res.status(400).send({ status: false, message: "Given id format is invalid" })
         let findParams = await usermodel.findOne({ data })
-        if (!findParams) return res.status(400).send({ status: false, message: "We couldn't find data by given id" })
+        if (!findParams) return res.status(404).send({ status: false, message: "We couldn't find data by given id" })
 
         res.status(200).send({ status: true, message: findParams })
 
@@ -146,7 +146,7 @@ const updateUser = async function (req, res) {
         let userId = req.params.userId
         if (!isValidObjectId(userId)) return res.status(400).send({ status: false, message: "Given id format is invalid" })
         let user = await usermodel.findById(userId)
-        if (!user) return res.status(400).send({ status: false, message: "We couldn't find data by given id" })
+        if (!user) return res.status(404).send({ status: false, message: "We couldn't find data by given id" })
         let files=req.files
         let data =req.body
         const { fname, lname, email, phone, password, address, profileImage } = data
@@ -158,9 +158,9 @@ const updateUser = async function (req, res) {
             let uploadedFileURL = await uploadFile(files[0])
             user.profileImage = uploadedFileURL
         }
-        if(!files){
+         if(!files){
         if (isValidBody(data)) return res.status(400).send({ status: false, message: "Please enter some field for Upatation" })
-        }
+         }
 
         console.log(files)
 
