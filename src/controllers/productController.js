@@ -21,8 +21,7 @@ const createProduct= async (req,res)=>{
     if(!isValid(description))return res.status(400).send({ status: false, message: `Description should not be empty` })
 
     if(!isValid(price))return res.status(400).send({ status: false, message: `price should not be empty` })
-   // if( price !== Number)return res.status(400).send({ status: false, message: `${price} is not a valid Indian Currency` })
-    
+    if (isNaN(parseInt(price))) {return res.status(400).send({status: false,  message: "price should be Number" })}    
     if(currencyId){
       if( currencyId!="INR") return res.status(400).send({ status: false, message: `Currency Id should Be INR` })}
       data.currencyId="INR"
@@ -36,9 +35,7 @@ const createProduct= async (req,res)=>{
 
    if(!isValidSize(availableSizes)){ return res.status(400).send({ status: false, message: "Please select from the given sizes S, XS, M, X, L, XXL, XL" })}
 
-//    if(installments){
-//     if(!isValid(installments))return res.status(400).send({ status: false, message: `Installments cannot be empty` })
-//     if(!isValidCurrency(installments))return res.status(400).send({ status: false, message: `${installments} is not a valid Installments` })}
+
 if (files && files.length > 0) {
     if (!(isValidImg(files[0].mimetype))) {
         return res.status(400).send({ status: false, message: "Image Should be of JPEG/ JPG/ PNG" })
@@ -145,7 +142,7 @@ const updateProduct= async function(req,res){
 
 const getProductById= async function(req,res){
     let id= req.params.productId
-    
+    if(id.length==0 ||id==':productId')return res.status(400).send({status:false, message: "Enter product id in params" })
     if(!isValidObjectId(id)) return res.status(400).send({status:false,message:"Enter Id in valid Format"})
     
     let data= await productModel.findById(id)
@@ -157,6 +154,7 @@ const getProductById= async function(req,res){
 
 const delProductById=async function(req,res){
     let id= req.params.productId
+    if(id.length==0 ||id==':productId')return res.status(400).send({status:false, message: "Enter product id in params" })
     if(!isValidObjectId(id)) return res.status(400).send({status:false,message:"Enter Id in valid Format"})
     
     let data= await productModel.findById(id)

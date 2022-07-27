@@ -6,7 +6,8 @@ const { json } = require("body-parser")
 
 const createUser = async function (req, res) {
     try {
-        let data = req.body
+        let data = JSON.parse(JSON.stringify(req.body))
+        console.log(data)
         if (isValidBody(data)) return res.status(400).send({ status: false, message: "Body Should not be empty" })
         let files = req.files
         const { fname, lname, email, phone, password, address, profileImage } = data
@@ -31,7 +32,7 @@ const createUser = async function (req, res) {
         //——————————————————————————————Address Validations
         if (typeof address === "string") return res.status(400).send({ status: false, message: "Address should be an Object" })
         if (typeof address === "object") {
-            if (isValidBody(address)) return res.status(400).send({ status: false, message: "Address Should not be empty" })
+             if (isValidBody(address)) return res.status(400).send({ status: false, message: "Address Should not be empty" })
             if (!("shipping" in address)) return res.status(400).send({ status: false, message: "Shipping is required in address" })
             if (typeof address.shipping === "string") return res.status(400).send({ status: false, message: "Shipping in Address Should be an object" })
             if (isValidBody(address.shipping)) return res.status(400).send({ status: false, message: "Shipping Should not be empty" })
@@ -124,6 +125,7 @@ const getUser = async function (req, res) {
     try {
 
         let data = req.params.userId
+        // if(req.params.userId.length==0 || req.params.userId=='/user/:userId/profile') return res.status(400).send({status:false,message:"Please Enter UserId in params"})
         if (!isValidObjectId(data)) return res.status(400).send({ status: false, message: "Given id format is invalid" })
         let findParams = await usermodel.findOne({ data })
         if (!findParams) return res.status(404).send({ status: false, message: "We couldn't find data by given id" })
@@ -142,7 +144,6 @@ const getUser = async function (req, res) {
 
 const updateUser = async function (req, res) {
     try {
-        //console.log(req)
         let userId = req.params.userId
         if (!isValidObjectId(userId)) return res.status(400).send({ status: false, message: "Given id format is invalid" })
         let user = await usermodel.findById(userId)
