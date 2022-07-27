@@ -125,7 +125,7 @@ const getUser = async function (req, res) {
     try {
 
         let data = req.params.userId
-        // if(req.params.userId.length==0 || req.params.userId=='/user/:userId/profile') return res.status(400).send({status:false,message:"Please Enter UserId in params"})
+        
         if (!isValidObjectId(data)) return res.status(400).send({ status: false, message: "Given id format is invalid" })
         let findParams = await usermodel.findOne({ data })
         if (!findParams) return res.status(404).send({ status: false, message: "We couldn't find data by given id" })

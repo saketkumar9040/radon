@@ -30,6 +30,7 @@ const author= async function (req,res,next){
     let parmId=req.params.userId
     let dUderId=req.DecodedId
      if(parmId){
+        if(req.params.userId.length==0 || req.params.userId==':userId') return res.status(400).send({status:false,message:"Please Enter UserId in params"})
         if(!isValidObjectId(parmId)) return res.status(400).send({status:false,message:"Pls Enter Id in Valid Format"})
         if(!(await usermodel.findById(parmId))) return res.status(400).send({status:false,message:"Id Doesn't Exists"})
         if(parmId !== dUderId) return res.status(400).send({status:false,message:"Sorry You Are Not Authorise"})
