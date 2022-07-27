@@ -147,9 +147,6 @@ const updateUser = async function (req, res) {
 
      //   if (Object.keys(userId).length==0) return res.status(400).send({ status: false, message: "Please enter userId" })
         if (!isValidObjectId(userId)) return res.status(400).send({ status: false, message: "Given id format is invalid" })
-        let validId=await usermodel.findById(userId)
-        if (!validId) return res.status(404).send({ status: false, message: "No such user Exists" })
-        
         
 //if (isValidBody(data)) return res.status(400).send({ status: false, message: "Please enter some field for Upatation" })
         let user = await usermodel.findById(userId)
