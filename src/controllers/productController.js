@@ -16,10 +16,13 @@ const createProduct= async (req,res)=>{
             }
     if(!isValid(title))return res.status(400).send({ status: false, message: `Title should not be empty` })
     if(!isValidTName(title))return res.status(400).send({ status: false, message: `${title} is not a valid title` })
+    let title1=title.split(" ").filter(e=>e).join(" ")
+    data.title=title1
     if(await productModel.findOne({title:title}))return res.status(400).send({ status: false, message: `${title} already  exists` })
     
     if(!isValid(description))return res.status(400).send({ status: false, message: `Description should not be empty` })
-
+    data.description=description.split(" ").filter(e=>e).join(" ")
+    
     if(!isValid(price))return res.status(400).send({ status: false, message: `price should not be empty` })   
     if(isNaN(parseInt(price))) return res.status(400).send({status:false,message:"Price Should Be A Number"})
     if(currencyId){
