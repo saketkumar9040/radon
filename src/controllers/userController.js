@@ -2,7 +2,7 @@ const usermodel = require("../models/userModel")
 const jwt = require("jsonwebtoken")
 const { isValid, isValidBody, isValidName, isValidMail, isValidImg, isValidPh, isValidPassword, comparePw, isValidPincode, isValidStreet, securepw, isValidObjectId } = require("../validation/validation")
 const { uploadFile } = require("../aws/aws")
-const { json } = require("body-parser")
+
 
 const createUser = async function (req, res) {
     try {
@@ -141,8 +141,6 @@ const getUser = async function (req, res) {
     }
 
 }
-
-
 
 const updateUser = async function (req, res) {
     try {
