@@ -23,7 +23,7 @@ const createProduct= async (req,res)=>{
     if(!isValid(price))return res.status(400).send({ status: false, message: `price should not be empty` })   
     if(isNaN(parseInt(price))) return res.status(400).send({status:false,message:"Price Should Be A Number"})
     if(currencyId){
-      if( currencyId!="INR" || currencyId!="inr") return res.status(400).send({ status: false, message: `Currency Id should Be INR` })
+      if( !(currencyId ==="INR" || currencyId ==="inr")) return res.status(400).send({ status: false, message: `Currency Id should Be INR` })
       data.currencyId=currencyId.toUpperCase()
     }
     data.currencyId="INR"
