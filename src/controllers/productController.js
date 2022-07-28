@@ -37,7 +37,7 @@ const createProduct= async (req,res)=>{
  
    let sizes= availableSizes.toUpperCase().trim().split(",").map(e=>e.trim())
    for(let i=0;i<sizes.length;i++){
-    if(!isValidSize(sizes[i])){ return res.status(400).send({ status: false, message: "Please select from the given sizes S, XS, M, X, L, XXL, XL" })}
+    if(!isValidSize(sizes[i])){ return res.status(400).send({ status: false, message: `The size accepted only from these (${sizes[i]}) S, XS, M, X, L, XXL, XL" `})}
    }
    data.availableSizes=sizes
 
