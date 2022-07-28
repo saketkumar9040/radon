@@ -28,7 +28,7 @@ const createProduct= async (req,res)=>{
     }
     data.currencyId="INR"
       if(currencyFormat){
-      if( currencyFormat!="₹") return res.status(400).send({ status: false, message: `Currency format should Be ₹ `})}
+      if( !(currencyFormat==="₹")) return res.status(400).send({ status: false, message: `Currency format should Be ₹ `})}
       data.currencyFormat="₹"
     
    if(!isValid(style)){ return res.status(400).send({ status: false, message: "Style should not be empty" })}
