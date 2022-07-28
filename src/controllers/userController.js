@@ -7,7 +7,7 @@ const { json } = require("body-parser")
 const createUser = async function (req, res) {
     try {
         let data = JSON.parse(JSON.stringify(req.body))
-        console.log(data)
+        
         if (isValidBody(data)) return res.status(400).send({ status: false, message: "Body Should not be empty" })
         let files = req.files
         const { fname, lname, email, phone, password, address, profileImage } = data

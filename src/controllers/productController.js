@@ -4,10 +4,10 @@ const { uploadFile } = require("../aws/aws")
 
 const createProduct= async (req,res)=>{
     try{
-    let data =req.body 
+    let data =JSON.parse(JSON.stringify(req.body)) 
     let files=req.files
     if(isValidBody(data)){return res.status(400).send({status:false,message:"Body Should Not Be Empty"})}
-    let{title,description,price,currencyId, currencyFormat,style,availableSizes}=data
+    let{title,description,price,currencyId, currencyFormat,style,availableSizes,isFreeShipping}=data
 
     let arr=["title","description","price","availableSizes","style"]
         for (let i = 0; i < arr.length; i++) {
@@ -23,9 +23,10 @@ const createProduct= async (req,res)=>{
     if(!isValid(price))return res.status(400).send({ status: false, message: `price should not be empty` })   
     if(isNaN(parseInt(price))) return res.status(400).send({status:false,message:"Price Should Be A Number"})
     if(currencyId){
-      if( currencyId!="INR") return res.status(400).send({ status: false, message: `Currency Id should Be INR` })}
-      data.currencyId="INR"
-
+      if( currencyId!="INR" || currencyId!="inr") return res.status(400).send({ status: false, message: `Currency Id should Be INR` })
+      data.currencyId=currencyId.toUpperCase()
+    }
+    data.currencyId="INR"
       if(currencyFormat){
       if( currencyFormat!="₹") return res.status(400).send({ status: false, message: `Currency format should Be ₹ `})}
       data.currencyFormat="₹"
@@ -33,8 +34,18 @@ const createProduct= async (req,res)=>{
    if(!isValid(style)){ return res.status(400).send({ status: false, message: "Style should not be empty" })}
    if(!isValidName(style)){ return res.status(400).send({ status: false, message: `${style} is not a valid style name` })}
 
-   if(!isValidSize(availableSizes)){ return res.status(400).send({ status: false, message: "Please select from the given sizes S, XS, M, X, L, XXL, XL" })}
+ 
+   let sizes= availableSizes.toUpperCase().trim().split(",").map(e=>e.trim())
+   for(let i=0;i<sizes.length;i++){
+    if(!isValidSize(sizes[i])){ return res.status(400).send({ status: false, message: "Please select from the given sizes S, XS, M, X, L, XXL, XL" })}
+   }
+   data.availableSizes=sizes
 
+   if("isFreeShipping" in data){
+    if(!isValid(isFreeShipping)) return res.status(400).send({status:false,message:"isFreeShipping should not be empty"})
+    if(!(isFreeShipping === "true" || isFreeShipping === "false")) return res.status(400).send({status:false,message:"isFreeShipping should be only True False"})
+    data.isFreeShipping=isFreeShipping
+ }
 
 if (files && files.length > 0) {
     if (!(isValidImg(files[0].mimetype))) {
@@ -53,7 +64,56 @@ data.deletedAt=null
 }
 }
 
-//—————————————————————————————————————————UpdateProductById————————————————————————————————————————————————————————————————————————
+// title: {string, mandatory, unique},
+//   description: {string, mandatory},
+//   price: {number, mandatory, valid number/decimal},
+//   currencyId: {string, mandatory, INR},
+//   currencyFormat: {string, mandatory, Rupee symbol},
+//   isFreeShipping: {boolean, default: false},
+//   productImage: {string, mandatory},  // s3 link
+//   style: {string},
+//   availableSizes: {array of string, at least one size, enum["S", "XS","M","X", "L","XXL", "XL"]},
+//   installments: {number},
+//   deletedAt: {Date, when the document is deleted}, 
+//   isDeleted: {boolean, default: false},
+//
+//—————————————————————————————————————————getProductByFilter————————————————————————————————————————————————————
+const getProducts=async function(req,res){
+    let query=req.query
+    console.log(query)
+    let obj={
+        isDeleted:false
+    }
+    const {size,name,priceGreaterThan,priceLessThan}=query
+    if(size){
+       let sizes= size.toUpperCase().trim().split(",").map(e=>e.trim())
+       for(let i=0;i<sizes.length;i++){
+        if(!isValidSize(sizes[i])){ return res.status(400).send({ status: false, message: `The (${sizes[i]}) size is not from these [S,XS,M,X,L,XXL,XL] `})}}
+       obj.availableSizes={$all:sizes}
+    }
+
+  
+
+    let data= await productModel.find(obj)
+    if(data.length==0){
+        return res.status(404).send({status:false,message:"No data found"})
+    }
+    res.status(200).send({status:true,data:data})
+}
+
+//—————————————————————————————————————————getProductById————————————————————————————————————————————————————————
+
+const getProductById= async function(req,res){
+    let id= req.params.productId
+    if(id.length==0 ||id==':productId')return res.status(400).send({status:false, message: "Enter product id in params" })
+    if(!isValidObjectId(id)) return res.status(400).send({status:false,message:"Enter Id in valid Format"})
+    
+    let data= await productModel.findById(id)
+    if(!data) return res.status(404).send({status:false,message:"No Data found wih this ID"})
+    if(data.isDeleted == true){return res.status(404).send({status:false,message:"This product is Deleted"})}
+    res.status(200).send({status:true,data:data})
+}
+//—————————————————————————————————————————UpdateProductById—————————————————————————————————————————————————————
 const updateProduct= async function(req,res){
     try{
     let id= req.params.productId
@@ -106,13 +166,20 @@ const updateProduct= async function(req,res){
      }
      if("availableSizes" in body){
          if(!isValid(availableSizes)) return res.status(400).send({status:false,message:"AvailableSizes should not be empty"})
-         if(!isValidSize(availableSizes)) return res.status(400).send({status:false,message:" Sizes should be from these ['S', 'XS','M','X', 'L','XXL','XL']"})
-         data.availableSizes=availableSizes
+         let sizes=availableSizes.toUpperCase().trim().split(",").map(e=>e.trim())
+         for(let i=0;i<sizes.length;i++){
+            if(!isValidSize(sizes[i])) return res.status(400).send({status:false,message: `This Size ( ${sizes[i]} ) is not from these ['S', 'XS','M','X', 'L','XXL','XL']`})
         }
+        let savedSize=await productModel.findById(id).select({availableSizes:1,_id:0})
+        let value=savedSize["availableSizes"].valueOf()
+        for(let i=0;i<sizes.length;i++){
+          if(value.includes(sizes[i])){
+           return res.status(400).send({status:false,message:`Size ${sizes[i]} is already Exists Choose Another One`})}
+          else{await productModel.findOneAndUpdate({_id:id},{$push:{availableSizes:sizes[i]}})}}}
         
         if("installments" in body){
          if(!isValid(installments)) return res.status(400).send({status:false,message:"installments should not be empty"})
-         if(typeof installments !== Number) return res.status(400).send({status:false,message:"Installments Should be Of Number Type"})
+         if(isNaN(parseInt(installments))) return res.status(400).send({status:false,message:"Installments Should be Of Number Type"})
          data.installments=installments
      }
 
@@ -122,26 +189,6 @@ const updateProduct= async function(req,res){
     catch(err){
         res.status(500).send({status:false,message:err.message})
     }
-}
-
-
-
-
-
-
-
-
-//—————————————————————————————————————————getProductById————————————————————————————————————————————————————————
-
-const getProductById= async function(req,res){
-    let id= req.params.productId
-    if(id.length==0 ||id==':productId')return res.status(400).send({status:false, message: "Enter product id in params" })
-    if(!isValidObjectId(id)) return res.status(400).send({status:false,message:"Enter Id in valid Format"})
-    
-    let data= await productModel.findById(id)
-    if(!data) return res.status(404).send({status:false,message:"No Data found wih this ID"})
-    if(data.isDeleted == true){return res.status(404).send({status:false,message:"This product is Deleted"})}
-    res.status(200).send({status:true,data:data})
 }
 
 //—————————————————————————————————————————delProductById————————————————————————————————————————————————
@@ -164,6 +211,6 @@ const delProductById=async function(req,res){
 
 
 
-module.exports={createProduct,getProductById,delProductById,updateProduct}
+module.exports={createProduct,getProductById,delProductById,updateProduct,getProducts}
 
       
