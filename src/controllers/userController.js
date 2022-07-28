@@ -43,6 +43,7 @@ const createUser = async function (req, res) {
             }
 
             if (!isValid(address.shipping.street)) return res.status(400).send({ status: false, message: "Street should not be empty in Shipping" })
+            data.address.shipping.street=address.shipping.street.split(" ").filter(e => e).join(" ")
             if (!isValid(address.shipping.city)) return res.status(400).send({ status: false, message: "city should not be empty in shipping" })
             if (!isValidName(address.shipping.city)) return res.status(400).send({ status: false, message: "Pls Enter Valid City Name in Shipping" })
             if (!isValid(address.shipping.pincode)) return res.status(400).send({ status: false, message: "Pincode should not be empty in shipping" })
@@ -58,6 +59,7 @@ const createUser = async function (req, res) {
             }
 
             if (!isValid(address.billing.street)) return res.status(400).send({ status: false, message: "Street should not be empty in Billing" })
+            data.address.billing.street=address.billing.street.split(" ").filter(e => e).join(" ")
             if (!isValid(address.billing.city)) return res.status(400).send({ status: false, message: "city should not be empty in Billing" })
             if (!isValidName(address.billing.city)) return res.status(400).send({ status: false, message: "Pls Enter Valid City Name in Billing" })
             if (!isValid(address.billing.pincode)) return res.status(400).send({ status: false, message: "Pincode should not be empty in Billing" })
@@ -163,8 +165,6 @@ const updateUser = async function (req, res) {
         if (isValidBody(data)) return res.status(400).send({ status: false, message: "Please enter some field for Upatation" })
          }
 
-        console.log(files)
-
         if ("fname" in data)  {
             if (!isValid(fname)) return res.status(400).send({ status: false, message: "fname shouldnot be empty" })
             if (!isValidName(fname)) return res.status(400).send({ status: false, message: "Pls Enter Valid First Name" })
@@ -214,7 +214,7 @@ const updateUser = async function (req, res) {
                       const {street,city,pincode} = shipping
                         if ("street" in shipping) {
                             if (!isValid(street)) return res.status(400).send({ status: false, message: "Street Should Not Be empty" })
-                            user.address.shipping.street = street
+                            user.address.shipping.street = street.split(" ").filter(e => e).join(" ")
                         }
                         if ("city" in shipping) {
                             if (!isValid(city)) return res.status(400).send({ status: false, message: "City Should not be empty" })
@@ -235,7 +235,7 @@ const updateUser = async function (req, res) {
                         const {street,city,pincode} = billing
                         if ("street" in billing) {
                             if (!isValid(street)) return res.status(400).send({ status: false, message: "Street in Billing Should Not Be empty" })
-                            user.address.billing.street = street
+                            user.address.billing.street = street.split(" ").filter(e => e).join(" ")
                         }
                         if("city" in billing){
                             if (!isValid(city)) return res.status(400).send({ status: false, message: "City in Billing Should not be empty " })

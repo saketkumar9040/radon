@@ -163,7 +163,7 @@ const updateProduct = async function (req, res) {
             if (!(isFreeShipping === "true" || isFreeShipping === "false")) return res.status(400).send({ status: false, message: "isFreeShipping should be only True False" })
             data.isFreeShipping = isFreeShipping
         }
-        if( typeof productImage === "string" || typeof productImage === "string") return res.status(400).send({status:false,message:"ProductImg should be of typeFiles"})
+        if( typeof productImage === "string" || typeof productImage === "object") return res.status(400).send({status:false,message:"ProductImg should be of typeFiles"})
         if (files && files.length > 0) {
             if (!(isValidImg(files[0].mimetype))) {
                 return res.status(400).send({ status: false, message: "Image Should be of JPEG/ JPG/ PNG" })
