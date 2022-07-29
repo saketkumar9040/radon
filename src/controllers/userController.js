@@ -1,8 +1,8 @@
 const usermodel = require("../models/userModel")
 const jwt = require("jsonwebtoken")
-const { isValid, isValidBody, isValidName, isValidMail, isValidImg, isValidPh, isValidPassword, comparePw, isValidPincode, isValidStreet, securepw, isValidObjectId } = require("../validation/validation")
+const { isValid, isValidBody, isValidName, isValidMail, isValidImg, isValidPh, isValidPassword, comparePw, isValidPincode, securepw, isValidObjectId } = require("../validation/validation")
 const { uploadFile } = require("../aws/aws")
-const { json } = require("body-parser")
+
 
 const createUser = async function (req, res) {
     try {
@@ -142,8 +142,6 @@ const getUser = async function (req, res) {
 
 }
 
-
-
 const updateUser = async function (req, res) {
     try {
         let userId = req.params.userId
@@ -263,4 +261,6 @@ const updateUser = async function (req, res) {
 const notFound = async function (req, res) {
     res.status(404).send({ status: false, message: "Route not found" })
 }
+
+
 module.exports = { createUser, loginUser, getUser, updateUser, notFound }
