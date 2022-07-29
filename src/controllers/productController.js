@@ -25,7 +25,11 @@ const createProduct = async (req, res) => {
         data.description = description.split(" ").filter(e => e).join(" ")
 
         if (!isValid(price)) return res.status(400).send({ status: false, message: `price should not be empty` })
-        if (isNaN(parseInt(price))) return res.status(400).send({ status: false, message: "Price Should Be A Number" })
+        let priceArr=price.split("")
+        for(let i=0;i<priceArr.length;i++){
+            if (isNaN(parseInt(priceArr[i]))) return res.status(400).send({ status: false, message: `(${priceArr[i]}) is not a valid price in (${price})` })   
+        }
+        
         if (currencyId) {
             if (!(currencyId === "INR" || currencyId === "inr")) return res.status(400).send({ status: false, message: `Currency Id should Be INR` })
             data.currencyId = currencyId.toUpperCase()
@@ -83,7 +87,7 @@ const getProducts = async function (req, res) {
     let sort={
         price:1
     }
-    let checkInput= Object.keys(query)
+    let checkInput= Object.keys(query) 
     const { size, name, priceGreaterThan, priceLessThan,priceSort  } = query
     let arr= ["size","name","priceGreaterThan","priceLessThan","priceSort"]
     for(let i=0;i<checkInput.length;i++){
@@ -97,7 +101,7 @@ const getProducts = async function (req, res) {
     if (size) {
         let sizes = size.toUpperCase().trim().split(",").map(e => e.trim())
         for (let i = 0; i < sizes.length; i++) {
-            if (!isValidSize(sizes[i])) { return res.status(400).send({ status: false, message: `The (${sizes[i]}) size is not from these [S,XS,M,X,L,XXL,XL] ` }) }
+            if (!isValidSize(sizes[i])) return res.status(400).send({ status: false, message: `The (${sizes[i]}) size is not from these [S,XS,M,X,L,XXL,XL] ` }) 
         }
         obj.availableSizes = { $all: sizes }
     }
@@ -131,10 +135,10 @@ const getProducts = async function (req, res) {
     if (data.length == 0) {
         return res.status(404).send({ status: false, message: "No data found" })
     }
-    res.status(200).send({ status: true, data: data }).pretty()
+    res.status(200).send({ status: true, data: data })
 }
 catch(err){
-    res.status(500).send({status:false,message:err.message})
+   return res.status(500).send({status:false,message:err.message})
 }
 }
 //—————————————————————————————————————————getProductById————————————————————————————————————————————————————————

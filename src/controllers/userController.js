@@ -105,7 +105,7 @@ const loginUser = async (req, res) => {
 
         if (!(await comparePw(password, user.password))) { return res.status(401).send({ status: false, message: "Invalid Credentials " }) }
 
-        let token = jwt.sign({ userId: user._id.toString() }, "project5@sss123", { expiresIn: "10m" })
+        let token = jwt.sign({ userId: user._id.toString() }, "project5@sss123", { expiresIn: "2d" })
 
         res.status(200).send({
             status: true,
@@ -129,7 +129,8 @@ const getUser = async function (req, res) {
         let data = req.params.userId
         
         if (!isValidObjectId(data)) return res.status(400).send({ status: false, message: "Given id format is invalid" })
-        let findParams = await usermodel.findOne({ data })
+        let findParams = await usermodel.findById(data)
+        console.log(findParams)
         if (!findParams) return res.status(404).send({ status: false, message: "We couldn't find data by given id" })
 
         res.status(200).send({ status: true, message: findParams })
