@@ -54,7 +54,7 @@ const createProduct = async (req, res) => {
         if ("installments" in data) {
             if (!isValid(installments)) return res.status(400).send({ status: false, message: "Installments should not be empty" })
             if (isNaN(parseInt(installments))) return res.status(400).send({ status: false, message: "Installments should be in a number" })
-        } else { data.installments = null }
+        } else { data.installments = 0 }
 
         if (files && files.length > 0) {
             if (!(isValidImg(files[0].mimetype))) {
@@ -80,9 +80,12 @@ const getProducts = async function (req, res) {
     let obj = {
         isDeleted: false
     }
+    let sort={
+        price:1
+    }
     let checkInput= Object.keys(query)
-    const { size, name, priceGreaterThan, priceLessThan } = query
-    let arr= ["size","name","priceGreaterThan","priceLessThan"]
+    const { size, name, priceGreaterThan, priceLessThan,priceSort  } = query
+    let arr= ["size","name","priceGreaterThan","priceLessThan","priceSort"]
     for(let i=0;i<checkInput.length;i++){
       if(!(arr.includes(checkInput[i]))){
         return res.status(400).send({status:false,message:`(${checkInput[i]}) is Not A valid filter name.Use from These [size,name,priceGreaterThan,priceLessThan] Instead Of (${checkInput[i]}) `})
@@ -115,12 +118,20 @@ const getProducts = async function (req, res) {
     let lower= name.toLowerCase().trim()
     obj.title= {$regex:lower}
     }
-    
-    let data = await productModel.find(obj).sort({price:1})
+
+    if(priceSort){
+        if (isNaN(parseInt(priceSort))) return res.status(400).send({status:false,message:"The PriceSort Is only Ascending(1) or Descending(-1) in order"})
+        if(!((priceSort == 1) || (priceSort == -1))) return res.status(400).send({status:false,message:"PriceSort Should be Only 1 oe -1"})
+        if (!(Object.keys(sort).length ==0)){
+            delete(sort.price)  }
+        if (priceSort == -1){ sort.price =-1 }
+        else{ sort.price=1 }
+    }
+    let data = await productModel.find(obj).sort(sort)
     if (data.length == 0) {
         return res.status(404).send({ status: false, message: "No data found" })
     }
-    res.status(200).send({ status: true, data: data })
+    res.status(200).send({ status: true, data: data }).pretty()
 }
 catch(err){
     res.status(500).send({status:false,message:err.message})
@@ -129,6 +140,7 @@ catch(err){
 //—————————————————————————————————————————getProductById————————————————————————————————————————————————————————
 
 const getProductById = async function (req, res) {
+    try{
     let id = req.params.productId
     if (id.length == 0 || id == ':productId') return res.status(400).send({ status: false, message: "Enter product id in params" })
     if (!isValidObjectId(id)) return res.status(400).send({ status: false, message: "Enter Id in valid Format" })
@@ -137,6 +149,10 @@ const getProductById = async function (req, res) {
     if (!data) return res.status(404).send({ status: false, message: "No Data found wih this ID" })
     if (data.isDeleted == true) { return res.status(404).send({ status: false, message: "This product is Deleted" }) }
     res.status(200).send({ status: true, data: data })
+    }
+    catch(err){
+        res.status(500).send({status:false,message:err.message})
+    }
 }
 //—————————————————————————————————————————UpdateProductById—————————————————————————————————————————————————————
 const updateProduct = async function (req, res) {
@@ -225,6 +241,7 @@ const updateProduct = async function (req, res) {
 }
 //—————————————————————————————————————————delProductById————————————————————————————————————————————————
 const delProductById = async function (req, res) {
+    try{
     let id = req.params.productId
     if (id.length == 0 || id == ':productId') return res.status(400).send({ status: false, message: "Enter product id in params" })
     if (!isValidObjectId(id)) return res.status(400).send({ status: false, message: "Enter Id in valid Format" })
@@ -237,7 +254,10 @@ const delProductById = async function (req, res) {
     await productModel.findOneAndUpdate({ _id: id }, { isDeleted: true, deletedAt: date })
 
     res.status(200).send({ status: true, message: "Product is deleted Successfully" })
-
+    }
+    catch(err){
+        res.status(500).send({status:false,message:err.message})
+    }
 }
 
 

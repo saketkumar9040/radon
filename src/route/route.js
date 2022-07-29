@@ -9,7 +9,7 @@ const { authen,author} = require("../middleware/middleware")
 router.post("/register",createUser)
 router.post("/login",loginUser)
 router.get("/user/:userId/profile",authen,author,getUser)
-router.put("/user/:userId/profile",updateUser)
+router.put("/user/:userId/profile",authen,author,updateUser)
 
 
 //—————————————————————————————————————————Product Api's————————————————————————————————————————————————————
@@ -19,6 +19,13 @@ router.get("/products/:productId",getProductById)
 router.delete("/products/:productId",delProductById)
 router.put("/products/:productId",updateProduct)
 router.get("/products",getProducts )
+
+//—————————————————————————————————————————Invalid Route————————————————————————————————————————————————————
+
  router.all("/*",notFound)
+
+
+
+
 module.exports = router
 
