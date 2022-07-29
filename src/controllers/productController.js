@@ -131,7 +131,7 @@ const getProducts = async function (req, res) {
     if (data.length == 0) {
         return res.status(404).send({ status: false, message: "No data found" })
     }
-    res.status(200).send({ status: true, data: data }).pretty()
+    res.status(200).send({ status: true, data: data })
 }
 catch(err){
     res.status(500).send({status:false,message:err.message})
