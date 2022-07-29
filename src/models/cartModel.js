@@ -2,7 +2,7 @@ const mongoose=require("mongoose")
 const objectId=mongoose.Schema.Types.ObjectId
 
 
-const cartScehma= mongoose.Schema(
+const cartSchema= mongoose.Schema(
     {
         userId: {type: objectId, ref: "User", required:true, unique:true},
         items: {
@@ -14,4 +14,4 @@ const cartScehma= mongoose.Schema(
 
     },{timestamps:true}
 );
-module.exports=mongoose.model("cart",cartScehma)
+module.exports=mongoose.model("cart",cartSchema)
