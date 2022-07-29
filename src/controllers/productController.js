@@ -57,7 +57,10 @@ const createProduct = async (req, res) => {
         }
         if ("installments" in data) {
             if (!isValid(installments)) return res.status(400).send({ status: false, message: "Installments should not be empty" })
-            if (isNaN(parseInt(installments))) return res.status(400).send({ status: false, message: "Installments should be in a number" })
+            let installmentsArr=installments.split("")
+            for(let i=0;i<installmentsArr.length;i++){
+                if (isNaN(parseInt(installmentsArr[i]))) return res.status(400).send({ status: false, message: `(${installmentsArr[i]}) is not a valid installment in (${installments})` })   
+            }
         } else { data.installments = 0 }
 
         if (files && files.length > 0) {
@@ -190,6 +193,10 @@ const updateProduct = async function (req, res) {
         if ("price" in body) {
             if (!isValid(price)) return res.status(400).send({ status: false, message: "Price should not be empty" })
             if (isNaN(parseInt(price))) return res.status(400).send({ status: false, message: "Price Should Be A Number" })
+            let priceArr=price.split("")
+            for(let i=0;i<priceArr.length;i++){
+                if (isNaN(parseInt(priceArr[i]))) return res.status(400).send({ status: false, message: `(${priceArr[i]}) is not a valid price in (${price})` })   
+            }
             data.price = price
         }
 
@@ -198,7 +205,8 @@ const updateProduct = async function (req, res) {
             if (!(isFreeShipping.toLowerCase() === "true" || isFreeShipping.toLowerCase() === "false")) return res.status(400).send({ status: false, message: "isFreeShipping should be only True False" })
             data.isFreeShipping = isFreeShipping.toLowerCase()
         }
-        if( typeof productImage === "string" || typeof productImage === "object") return res.status(400).send({status:false,message:"ProductImg should be of typeFiles"})
+
+        if ( typeof productImage === "string" || typeof productImage === "object") return res.status(400).send({status:false,message:"ProductImg should be of typeFiles"})
         if (files && files.length > 0) {
             if (!(isValidImg(files[0].mimetype))) {
                 return res.status(400).send({ status: false, message: "Image Should be of JPEG/ JPG/ PNG" })
@@ -232,7 +240,10 @@ const updateProduct = async function (req, res) {
 
         if ("installments" in body) {
             if (!isValid(installments)) return res.status(400).send({ status: false, message: "installments should not be empty" })
-            if (isNaN(parseInt(installments))) return res.status(400).send({ status: false, message: "Installments Should be Of Number Type" })
+            let installmentsArr=installments.split("")
+            for(let i=0;i<installmentsArr.length;i++){
+                if (isNaN(parseInt(installmentsArr[i]))) return res.status(400).send({ status: false, message: `(${installmentsArr[i]}) is not a valid installment in (${installments})` })   
+            }
             data.installments = installments
         }
 
