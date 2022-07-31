@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken")
 const { isValid, isValidBody, isValidName, isValidMail, isValidImg, isValidPh, isValidPassword, comparePw, isValidPincode, securepw, isValidObjectId } = require("../validation/validation")
 const { uploadFile } = require("../aws/aws")
 
+//—————————————————————————————————————————Register User————————————————————————————————————————————————————
 
 const createUser = async function (req, res) {
     try {
@@ -85,7 +86,7 @@ const createUser = async function (req, res) {
         return res.status(500).send({ status: false, message: err.message })
     }
 }
-
+//—————————————————————————————————————————Login User————————————————————————————————————————————————————
 const loginUser = async (req, res) => {
     try {
         let data = req.body
@@ -122,7 +123,7 @@ const loginUser = async (req, res) => {
     }
 }
 
-
+//—————————————————————————————————————————Get User By UserId————————————————————————————————————————————————————
 const getUser = async function (req, res) {
     try {
 
@@ -142,7 +143,7 @@ const getUser = async function (req, res) {
     }
 
 }
-
+//—————————————————————————————————————————Update User————————————————————————————————————————————————————
 const updateUser = async function (req, res) {
     try {
         let userId = req.params.userId

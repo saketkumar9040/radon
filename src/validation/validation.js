@@ -79,4 +79,6 @@ const isValidTName = (name) => {
         return true
 }
 
+
+
 module.exports={isValid,isValidStreet,isValidPincode,isValidPassword,isValidPassword,isValidPh,isValidMail,isValidName,isValidBody,securepw,comparePw,isValidImg,isValidObjectId,isValidCurrency,isValidSize,isValidTName}
