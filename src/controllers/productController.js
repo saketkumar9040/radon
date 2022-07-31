@@ -28,6 +28,9 @@ const createProduct = async (req, res) => {
         if (!isValid(price)) return res.status(400).send({ status: false, message: `price should not be empty` })
         let priceArr=price.split("")
         for(let i=0;i<priceArr.length;i++){
+            if(priceArr[i]=="."){
+                continue;
+            }
             if (isNaN(parseInt(priceArr[i]))) return res.status(400).send({ status: false, message: `(${priceArr[i]}) is not a valid price in (${price})` })   
         }
         
@@ -45,6 +48,7 @@ const createProduct = async (req, res) => {
         if (!isValidName(style)) { return res.status(400).send({ status: false, message: `${style} is not a valid style name` }) }
 
 
+        if(!isValid(availableSizes)) return res.status(400).send({status:false,message:"Available Size Should not be empty"})
         let sizes = availableSizes.toUpperCase().trim().split(",").map(e => e.trim())
         for (let i = 0; i < sizes.length; i++) {
             if (!isValidSize(sizes[i])) { return res.status(400).send({ status: false, message: `The size accepted only from these (${sizes[i]}) S, XS, M, X, L, XXL, XL" ` }) }
@@ -96,7 +100,7 @@ const getProducts = async function (req, res) {
     let arr= ["size","name","priceGreaterThan","priceLessThan","priceSort"]
     for(let i=0;i<checkInput.length;i++){
       if(!(arr.includes(checkInput[i]))){
-        return res.status(400).send({status:false,message:`(${checkInput[i]}) is Not A valid filter name.Use from These [size,name,priceGreaterThan,priceLessThan] Instead Of (${checkInput[i]}) `})
+        return res.status(400).send({status:false,message:`(${checkInput[i]}) is Not A valid filter name. Use filters from These filters [size,name,priceGreaterThan,priceLessThan] Instead Of (${checkInput[i]}) `})
       }
     }
     for(let i=0;i<checkInput.length;i++){
@@ -196,6 +200,9 @@ const updateProduct = async function (req, res) {
             if (isNaN(parseInt(price))) return res.status(400).send({ status: false, message: "Price Should Be A Number" })
             let priceArr=price.split("")
             for(let i=0;i<priceArr.length;i++){
+                if(priceArr[i]=="."){
+                    continue;
+                }
                 if (isNaN(parseInt(priceArr[i]))) return res.status(400).send({ status: false, message: `(${priceArr[i]}) is not a valid price in (${price})` })   
             }
             data.price = price
@@ -217,7 +224,7 @@ const updateProduct = async function (req, res) {
         }
         if ("style" in body) {
             if (!isValid(style)) return res.status(400).send({ status: false, message: "Style should not be empty" })
-            if (!isValidTName(style)) return res.status(400).send({ status: false, message: "Pls Enter Valid Style Category" })
+            if (!isValidName(style)) return res.status(400).send({ status: false, message: "Pls Enter Valid Style Category" })
             data.style = style
         }
         if ("availableSizes" in body) {
