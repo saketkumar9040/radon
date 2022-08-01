@@ -2,6 +2,7 @@ const express = require("express")
 const router = express.Router()
 const {createUser, loginUser, getUser,notFound, updateUser}=require("../controllers/userController")
 const{ createProduct,getProductById,delProductById,updateProduct,getProducts}=require("../controllers/productController")
+const {createCart}=require("../controllers/cartController")
 const { authen,author} = require("../middleware/middleware")
 
 
@@ -20,7 +21,10 @@ router.delete("/products/:productId",delProductById)
 router.put("/products/:productId",updateProduct)
 router.get("/products",getProducts )
 
-//—————————————————————————————————————————Invalid Route————————————————————————————————————————————————————
+//—————————————————————————————————————————[ Cart Api's ]————————————————————————————————————————————————————
+router.post("/users/:userId/cart",createCart)
+
+//————————————————————————————————————————— Invalid Route ————————————————————————————————————————————————————
 
  router.all("/*",notFound)
 
