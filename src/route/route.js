@@ -2,7 +2,7 @@ const express = require("express")
 const router = express.Router()
 const {createUser, loginUser, getUser,notFound, updateUser}=require("../controllers/userController")
 const{ createProduct,getProductById,delProductById,updateProduct,getProducts}=require("../controllers/productController")
-const {createCart, getCartDetails, deleteCart}=require("../controllers/cartController")
+const {createCart, getCartDetails, deleteCart,updateCart}=require("../controllers/cartController")
 const { authen,author} = require("../middleware/middleware")
 
 
@@ -26,6 +26,7 @@ router.get("/products",getProducts )
 router.post("/users/:userId/cart",createCart)
 router.get("/users/:userId/cart",getCartDetails)
 router.delete("/users/:userId/cart",deleteCart)
+router.put("/users/:userId/cart",updateCart)
 
 //————————————————————————————————————————— Invalid Route ————————————————————————————————————————————————————
 
