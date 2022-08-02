@@ -95,10 +95,8 @@ const getCartDetails = async (req, res) => {
         if (!isValidObjectId(userId)) return res.status(400).send({ status: false, message: "Enter userId in valid format" })
         if (!await userModel.findById(userId)) return res.status(400).send({ status: false, message: "No such  user exists" })
 
-        let findCart = await cartModel.findOne({ userId: userId }).select({items:0})
+        let findCart = await cartModel.findOne({ userId: userId }).select({_id:1,userId:1,items:{productId:1,quantity:1},totalPrice:1,totalItems:1,createdAt:1,updatedAt:1})
         if (!findCart) return res.status(404).send({ status: false, message: "No such cart Exists" })
-        let findCart1 = await cartModel.findOne({ userId: userId }).select({items:1,_id:0})
-        let response={status} 
      
         res.status(200).send({ status: true, message: "Successful", data: findCart })
 
@@ -110,8 +108,35 @@ const getCartDetails = async (req, res) => {
 //———————————————————————————————————————[ Update Cart Details ]——————————————————————————————————————————————
 
 const updateCart= async(req,res)=>{
-   let cartId= req.body
-   if(!cart) return res.status(400).send({status:false,message:"The Cart With this UserId Doesn't Exists"})
+   let body= req.body
+   let {cartId,productId,removeProduct}=body
+
+   if(!("cartId" in body)) return res.status(400).send({status:false,message:"Please enter cart Id in body "})
+   if(!("productId" in body))return res.status(400).send({status:false,message:"Please enter product Id in body"})
+   if(!("removeProduct" in body))return res.status(400).send({status:false,message:"Please enter removeProduct in body"})
+   if(!(isValid(cartId)))return res.status(400).send({status:false,message:" cart Id should not be empty "})
+   if(!(isValid(productId)))return res.status(400).send({status:false,message:" Product Id should not be empty "})
+   if(!(isValid(removeProduct)))return res.status(400).send({status:false,message:" Remove Product should not be empty "})
+   if (!isValidObjectId(cartId)) return res.status(400).send({ status: false, message: "Enter cartId in valid format" })
+   let cart = await cartModel.findOne({_id:cartId})
+   if(!cart) return res.status(404).send({status:false,message:"No such cart exists"})
+
+   if (!isValidObjectId(productId)) return res.status(400).send({ status: false, message: "Enter productId in valid format"})
+   if(!(await productModel.findOne({_id:productId,isDeleted:false})))return res.status(404).send({status:false,message:"No such product exists"})
+
+   if(!(removeProduct==="1"||removeProduct==="0")) return res.status(400).send({ status: false, message: "Removed product should be '0' or '1'" })
+   if(removeProduct==="0"){
+    let updatedCart=await cartModel.findOneAndUpdate({_id:cartId},{items:[]},{new:true})
+    res.status(200).send({status:true,message:"cart updated successfully",data:updatedCart})
+}else{
+     if(!(cart.totalItems>0))return res.status(400).send({ status: false, message: " No items to delete" })
+       let updatedCart=await cartModel.findOneAndUpdate({_id:cartId},{items:{productId:productId,$inc:{quantity:-1}
+    }},{new:true})
+    res.status(200).send({status:true,message:"cart updated successfully",data:updatedCart})
+
+   }
+//    res.status(200).send({status:true,message:"cart updated successfully",data:updatedCart})
+   
 }
 //—————————————————————————————————————————[ Delete Cart ]————————————————————————————————————————————————————
 
