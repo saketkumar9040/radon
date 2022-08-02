@@ -9,6 +9,7 @@ const userModel = require("../models/userModel")
 const createCart = async function (req, res) {
     try {
         let userId = req.params.userId
+        if(!isValidObjectId(userId)) return res.status(400).send({ status: false, message: "Enter UserId in valid format" })
         let body = req.body
         let sum = 0
         if (isValidBody(body)) return res.status(400).send({ status: false, message: "Body Should not Be Empty" })
@@ -87,6 +88,7 @@ const createCart = async function (req, res) {
         res.status(500).send({ status: false, message: err.message })
     }
 }
+
 //—————————————————————————————————————————[ Get Cart Details ]——————————————————————————————————————————————
 
 const getCartDetails = async (req, res) => {
@@ -95,14 +97,15 @@ const getCartDetails = async (req, res) => {
         if (!isValidObjectId(userId)) return res.status(400).send({ status: false, message: "Enter userId in valid format" })
         if (!await userModel.findById(userId)) return res.status(400).send({ status: false, message: "No such  user exists" })
 
-        let findCart = await cartModel.findOne({ userId: userId }).select({items:0})
+        let findCart = await cartModel.findOne({ userId: userId })//.select({items:0})
         if (!findCart) return res.status(404).send({ status: false, message: "No such cart Exists" })
-        let findCart1 = await cartModel.findOne({ userId: userId }).select({items:1,_id:0})
-        let response={status} 
+        //let findCart1 = await cartModel.findOne({ userId: userId }).select({items:1,_id:0})
+        // let response={status} 
      
         res.status(200).send({ status: true, message: "Successful", data: findCart })
 
     } catch (err) {
+        console.log(err)
         return res.status(500).send({ status: false, message: err.message })
     }
 
