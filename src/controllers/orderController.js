@@ -6,30 +6,12 @@ const { isValid, isValidBody, isValidSize, isValidTName, isValidImg, isValidName
 
 const createOrder=async(req,res)=>{
 
-    // {
-    //     "_id": ObjectId("88abc190ef0288abc190ef88"),
-    //     userId: ObjectId("88abc190ef0288abc190ef02"),
-    //     items: [{
-    //       productId: ObjectId("88abc190ef0288abc190ef55"),
-    //       quantity: 2
-    //     }, {
-    //       productId: ObjectId("88abc190ef0288abc190ef60"),
-    //       quantity: 1
-    //     }],
-    //     totalPrice: 50.99,
-    //     totalItems: 2,
-    //     totalQuantity: 3,
-    //     cancellable: true,
-    //     status: 'pending'
-    //     createdAt: "2021-09-17T04:25:07.803Z",
-    //     updatedAt: "2021-09-17T04:25:07.803Z",
-    //   }
    try{
      let userId=req.params.userId
      if(!isValidObjectId(userId))return res.status(40).send({status:false,message:"User Id is not in valid format"})
      let userExists=await userModel.findOne({_id:userId,isDeleted:false})
      if(!userExists)return res.status(404).send({status:false,message:"No such user exists"})
-     let userCart=await cartModel.findOne({usedId:usedId})
+     let userCart=await cartModel.findOne({userId:userId})
      if(!userCart)return res.status(404).send({status:false,message:"No such cart exists for the given user"})
      
      let data=req.body
@@ -47,7 +29,7 @@ const createOrder=async(req,res)=>{
      data.totalQuantity=cartTotalItems
 
      if("cancellable" in data){
-        if(data.cancellable!=="Boolean"){
+        if(data.cancellable!="true"||data.cancellable!="false"){
            return res.status(400).send({status:false,message:"cancellable should be either true or false "})
         }
     }

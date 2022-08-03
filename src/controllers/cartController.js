@@ -43,7 +43,7 @@ const createCart = async function (req, res) {
 
             if (cartExists.items[i].productId == productId) {
                 let priceOfproduct = productExists.price
-                cartExists.items[i].quantity += quantity
+                cartExists.items[i].quantity += parseInt(quantity)
                 cartExists.totalPrice = cartExists.totalPrice + priceOfproduct * parseInt(quantity)
                 cartExists.totalItems = cartItems.length
                 let updateExistingProduct = await cartModel.findOneAndUpdate({ _id: cartId },
@@ -107,7 +107,6 @@ const updateCart = async (req, res) => {
 
     if (!isValidObjectId(productId)) return res.status(400).send({ status: false, message: "Enter productId in valid format" })
     let productExists=await productModel.findOne({ _id: productId, isDeleted: false })
-    console.log(productExists)
     if(!productExists)return res.status(404).send({ status: false, message: "No such product exists" })
 
     if (!(removeProduct === "1" || removeProduct === "0")) return res.status(400).send({ status: false, message: "Removed product should be '0' or '1'" })
@@ -123,29 +122,27 @@ const updateCart = async (req, res) => {
             return res.status(404).send({status:false,message:`No Product Exists With this (${productId}) ID in the Cart`})
         }
     }
- } else {
-        if(!(cartExists.items.length>0)) return res.status(400).send({ status: false, message: " No items to delete" })
-        for(let i=0;i<cartExists.items.length;i++){
-            if(cartExists.items[i].productId==productId){
-                cartExists.items[i].quantity-=1
-                if(cartExists.items[i].quantity==0){
-                    cartExists.items.splice(i,1)
-                    cartExists.totalItems-=1
-                }
-                cartExists.totalPrice-=productExists.price
-                cartExists.save()
-                return res.status(200).send({status:true,message:"SuccessFully Updated",data:cartExists})
+} else{
+    if(cartExists.items.length==0) return res.status(400).send({status:false,message:"Cart is Already Empty"})
+    for(let j=0;j<cartExists.items.length;j++){
+        if(cartExists.items[j].productId==productId){
+            cartExists.items[j].quantity-=1
+            cartExists.totalPrice-=productExists.price
+            if(cartExists.items[j].quantity==0){
+                cartExists.totalItems-=1
+                cartExists.items.splice(j,1)
             }
-            else{
-                return res.status(404).send({status:false,message:`No Product Exists With this  ID in the Cart`})
-            }
+            cartExists.save()
+            return res.status(200).send({status:true,message:"successfully updated cart",data:cartExists})
         }
-        //res.status(200).send({ status: true, message: "cart updated successfully", data: updatedCart })
+    }
+    return res.status(404).send({status:false,message:`No Product Exists With this (${productId}) ID in the Cart`})
+ }
 
     }
     //    res.status(200).send({status:true,message:"cart updated successfully",data:updatedCart})
 
-}
+
 //—————————————————————————————————————————[ Delete Cart ]————————————————————————————————————————————————————
 
 const deleteCart = async (req, res) => {
