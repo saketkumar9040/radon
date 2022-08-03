@@ -92,6 +92,7 @@ const getCartDetails = async (req, res) => {
 
 const updateCart = async (req, res) => {
     let body = req.body
+    if(isValidBody(body)) return res.status(400).send({status:false,message:"Body Should Not be Empty"})
     let { cartId, productId, removeProduct } = body
 
     if (!("cartId" in body)) return res.status(400).send({ status: false, message: "Please enter cart Id in body " })
@@ -101,24 +102,45 @@ const updateCart = async (req, res) => {
     if (!(isValid(productId))) return res.status(400).send({ status: false, message: " Product Id should not be empty " })
     if (!(isValid(removeProduct))) return res.status(400).send({ status: false, message: " Remove Product should not be empty " })
     if (!isValidObjectId(cartId)) return res.status(400).send({ status: false, message: "Enter cartId in valid format" })
-    let cart = await cartModel.findOne({ _id: cartId })
-    if (!cart) return res.status(404).send({ status: false, message: "No such cart exists" })
+    let cartExists = await cartModel.findOne({ _id: cartId })
+    if (!cartExists) return res.status(404).send({ status: false, message: "No such cart exists" })
 
     if (!isValidObjectId(productId)) return res.status(400).send({ status: false, message: "Enter productId in valid format" })
-    if (!(await productModel.findOne({ _id: productId, isDeleted: false }))) return res.status(404).send({ status: false, message: "No such product exists" })
+    let productExists=await productModel.findOne({ _id: productId, isDeleted: false })
+    console.log(productExists)
+    if(!productExists)return res.status(404).send({ status: false, message: "No such product exists" })
 
     if (!(removeProduct === "1" || removeProduct === "0")) return res.status(400).send({ status: false, message: "Removed product should be '0' or '1'" })
     if (removeProduct === "0") {
-        let updatedCart = await cartModel.findOneAndUpdate({ _id: cartId }, { items: [] }, { new: true })
-        res.status(200).send({ status: true, message: "cart updated successfully", data: updatedCart })
-    } else {
-        if (!(cart.totalItems > 0)) return res.status(400).send({ status: false, message: " No items to delete" })
-        let updatedCart = await cartModel.findOneAndUpdate({ _id: cartId }, {
-            items: {
-                productId: productId, $inc: { quantity: -1 }
+    if(cartExists.items.length==0) return res.status(400).send({status:false,message:"Cart is Already Empty"})
+    for(let i=0;i<cartExists.items.length;i++){
+        if(cartExists.items[i].productId==productId){
+            cartExists.items.splice(i,1)
+            cartExists.save()
+            return res.status(200).send({status:true,message:"SuccessFully Updated",data:cartExists})
+        }
+        else{
+            return res.status(404).send({status:false,message:`No Product Exists With this (${productId}) ID in the Cart`})
+        }
+    }
+ } else {
+        if(!(cartExists.items.length>0)) return res.status(400).send({ status: false, message: " No items to delete" })
+        for(let i=0;i<cartExists.items.length;i++){
+            if(cartExists.items[i].productId==productId){
+                cartExists.items[i].quantity-=1
+                if(cartExists.items[i].quantity==0){
+                    cartExists.items.splice(i,1)
+                    cartExists.totalItems-=1
+                }
+                cartExists.totalPrice-=productExists.price
+                cartExists.save()
+                return res.status(200).send({status:true,message:"SuccessFully Updated",data:cartExists})
             }
-        }, { new: true })
-        res.status(200).send({ status: true, message: "cart updated successfully", data: updatedCart })
+            else{
+                return res.status(404).send({status:false,message:`No Product Exists With this  ID in the Cart`})
+            }
+        }
+        //res.status(200).send({ status: true, message: "cart updated successfully", data: updatedCart })
 
     }
     //    res.status(200).send({status:true,message:"cart updated successfully",data:updatedCart})
