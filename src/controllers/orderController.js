@@ -14,6 +14,7 @@ const createOrder=async(req,res)=>{
      let userCart=await cartModel.findOne({userId:userId})
      if(!userCart)return res.status(404).send({status:false,message:"No such cart exists for the given user"})
      
+
      let data=req.body
      data.userId=userId
      data.items=userCart.items
@@ -29,13 +30,15 @@ const createOrder=async(req,res)=>{
      data.totalQuantity=cartTotalItems
 
      if("cancellable" in data){
-        if(data.cancellable!="true"||data.cancellable!="false"){
-           return res.status(400).send({status:false,message:"cancellable should be either true or false "})
+        if(!isValid(data.cancellable)) return res.status(400).send({status:false,message:"cancellable should not be empty"})
+        if(!(data.cancellable==="true"||data.cancellable==="false")){
+           return res.status(400).send({status:false,message:"cancellable should be either true or false and in (lowerCase)"})
         }
     }
 
      if("status" in data){
-     if(data.status!=="pending"||data.status!=="completed"||data.status!=="cancled"){
+        if(!isValid(data.status)) return res.status(400).send({status:false,message:"status should not be empty"})
+     if(!(data.status==="pending"||data.status==="completed"||data.status==="cancled")){
         return res.status(400).send({status:false,message:"Status should be either of these [pending, completed, cancled] "})}
      }
      let savedData=await orderModel.create(data)
