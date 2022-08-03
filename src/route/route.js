@@ -3,6 +3,7 @@ const router = express.Router()
 const {createUser, loginUser, getUser,notFound, updateUser}=require("../controllers/userController")
 const{ createProduct,getProductById,delProductById,updateProduct,getProducts}=require("../controllers/productController")
 const {createCart, getCartDetails, deleteCart,updateCart}=require("../controllers/cartController")
+const{ createOrder }=require("../controllers/orderController")
 const { authen,author} = require("../middleware/middleware")
 
 
@@ -27,6 +28,10 @@ router.post("/users/:userId/cart",createCart)
 router.get("/users/:userId/cart",getCartDetails)
 router.delete("/users/:userId/cart",deleteCart)
 router.put("/users/:userId/cart",updateCart)
+
+//—————————————————————————————————————————[ order Api's ]————————————————————————————————————————————————————
+ 
+router.post("/users/:userId/orders",createOrder)
 
 //————————————————————————————————————————— Invalid Route ————————————————————————————————————————————————————
 

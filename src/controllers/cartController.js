@@ -39,11 +39,11 @@ const createCart = async function (req, res) {
         if(!isValidObjectId(cartId))return res.status(400).send({status:false,message:`${cartId} not a Valid Id`})
         // let cart= await cartModel.findOne({_id:cartId,userId:userId})
        // if(!cart) return res.status(400).send({status:false,message:`with this (${cartId}) no cart exists `})
-        let cartItems= cart.items
-        for(let i=0;i<cartItems.length;i++){
-        if(cartItems[i].productId==productId){
+       // let cartItems= cart.items
+        for(let i=0;i<cart.items.length;i++){
+        if(cart.items[i].productId==productId){
             let obj={
-                items:[{productId:productId,quantity:quantity+parseInt(cartItems[i].quantity)}],
+                items:[{productId:productId,quantity:quantity+parseInt(cart.items[i].quantity)}],
                 totalPrice:cart.totalPrice+product.price*parseInt(quantity),  totalItems:cartItems.length
             }
            let updateData= await cartModel.findOneAndUpdate({_id:cartId},obj,{new:true})
