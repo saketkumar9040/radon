@@ -1,6 +1,9 @@
 const jwt= require("jsonwebtoken")
 const usermodel= require("../models/userModel")
 const { isValidObjectId } = require("../validation/validation")
+
+//—————————————————————————————————————————[ Authentication ]————————————————————————————————————————————————————
+
 const authen= async function(req,res,next){
     try{
      const bearerheader= req.headers.authorization
@@ -25,6 +28,8 @@ const authen= async function(req,res,next){
         res.status(500).send({status:false,message:err.message})
     }
 }
+
+//—————————————————————————————————————————[ Authorization ]————————————————————————————————————————————————————
 
 const author= async function (req,res,next){
     let parmId=req.params.userId

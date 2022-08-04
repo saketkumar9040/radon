@@ -10,7 +10,7 @@ const {
 } = require("../validation/validation");
 const { uploadFile } = require("../aws/aws");
 
-//————————————————————————————————————————— Create Product ————————————————————————————————————————————————————
+//—————————————————————————————————————————[ Create Product ]————————————————————————————————————————————————————
 const createProduct = async (req, res) => {
   try {
     let data = JSON.parse(JSON.stringify(req.body));
@@ -199,7 +199,7 @@ const createProduct = async (req, res) => {
   }
 };
 
-//—————————————————————————————————————————Get Product By Filter———————————————————————————————————————————————————
+//—————————————————————————————————————————[  Get Product By Filter  ]————————————————————————————————————————————————
 const getProducts = async function (req, res) {
   try {
     let query = req.query;
@@ -315,7 +315,7 @@ const getProducts = async function (req, res) {
     return res.status(500).send({ status: false, message: err.message });
   }
 };
-//—————————————————————————————————————————Get Product By Id———————————————————————————————————————————————————————
+//———————————————————————————————————————[  Get Product By Id  ]———————————————————————————————————————————————————————
 
 const getProductById = async function (req, res) {
   try {
@@ -344,7 +344,7 @@ const getProductById = async function (req, res) {
     res.status(500).send({ status: false, message: err.message });
   }
 };
-//—————————————————————————————————————————Update Products By Id———————————————————————————————————————————————————
+//———————————————————————————————————————[  Update Products By Id  ]———————————————————————————————————————————————————
 const updateProduct = async function (req, res) {
   try {
     let id = req.params.productId;
@@ -562,7 +562,7 @@ const updateProduct = async function (req, res) {
     res.status(500).send({ status: false, message: err.message });
   }
 };
-//—————————————————————————————————————————delProductById————————————————————————————————————————————————
+//——————————————————————————————————————[  delProductById  ]————————————————————————————————————————————————
 const delProductById = async function (req, res) {
   try {
     let id = req.params.productId;
