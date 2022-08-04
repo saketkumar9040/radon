@@ -7,14 +7,14 @@ const{ createOrder,updateOrder }=require("../controllers/orderController")
 const { authen,author} = require("../middleware/middleware")
 
 
-//—————————————————————————————————————————User Api's————————————————————————————————————————————————————
+//—————————————————————————————————————————[  User Api's  ]————————————————————————————————————————————————————
 router.post("/register",createUser)
 router.post("/login",loginUser)
 router.get("/user/:userId/profile",authen,author,getUser)
 router.put("/user/:userId/profile",authen,author,updateUser)
 
 
-//—————————————————————————————————————————Product Api's————————————————————————————————————————————————————
+//—————————————————————————————————————————[  Product Api's  ]————————————————————————————————————————————————————
 
 router.post("/products",createProduct)
 router.get("/products/:productId",getProductById)
@@ -22,19 +22,19 @@ router.delete("/products/:productId",delProductById)
 router.put("/products/:productId",updateProduct)
 router.get("/products",getProducts )
 
-//—————————————————————————————————————————[ Cart Api's ]————————————————————————————————————————————————————
+//—————————————————————————————————————————[  Cart Api's  ]————————————————————————————————————————————————————
 
-router.post("/users/:userId/cart",createCart)
-router.get("/users/:userId/cart",getCartDetails)
-router.delete("/users/:userId/cart",deleteCart)
-router.put("/users/:userId/cart",updateCart)
+router.post("/users/:userId/cart",authen,createCart)
+router.get("/users/:userId/cart",authen,getCartDetails)
+router.delete("/users/:userId/cart",authen,deleteCart)
+router.put("/users/:userId/cart",authen,updateCart)
 
-//—————————————————————————————————————————[ order Api's ]————————————————————————————————————————————————————
+//—————————————————————————————————————————[  order Api's  ]————————————————————————————————————————————————————
  
-router.post("/users/:userId/orders",createOrder)
-router.put("/users/:userId/orders",updateOrder)
+router.post("/users/:userId/orders",authen,author,createOrder)
+router.put("/users/:userId/orders",authen,author,updateOrder)
 
-//————————————————————————————————————————— Invalid Route ————————————————————————————————————————————————————
+//—————————————————————————————————————————[  Invalid Route ]————————————————————————————————————————————————————
 
  router.all("/*",notFound)
 

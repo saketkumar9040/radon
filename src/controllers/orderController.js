@@ -9,8 +9,6 @@ const createOrder=async(req,res)=>{
 
      let userCart=await cartModel.findOne({userId:userId})
      if(!userCart)return res.status(404).send({status:false,message:"No such cart exists for the given user"})
-   
-     let deletedOrder
      
      let data=req.body
      data.userId=userId
@@ -55,7 +53,6 @@ const createOrder=async(req,res)=>{
 const updateOrder= async(req,res)=>{
    try{
    let userId=req.params.userId
-   console.log(userId)
 
    let data=req.body
    let{orderId}=data
@@ -65,7 +62,8 @@ const updateOrder= async(req,res)=>{
    let orderExists=await orderModel.findOne({_id:orderId,userId:userId})
    if(!orderExists)return res.status(404).send({status:false,message:"This order doesn't belongs to the users "})
 
-   if(orderExists.status=="cancled")return res.status(400).send({status:false,message:"This order has already been cancelled"})
+   if(orderExists.status=="cancled")return res.status(400)
+   .send({status:false,message:`(${orderId}) is already cancelled please create another order for updations `})
 
    if(orderExists.cancellable==false)return res.status(400).send({status:false,message:"The order that you have been  trying to cancel is under non-cancellable property"})
 
