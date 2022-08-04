@@ -4,8 +4,8 @@ const userSchema=mongoose.Schema( {
     lname: {type:String, required:true,trim:true},
     email: {type:String, required:true,unique:true,trim:true},
     profileImage: {type:String, required:true}, // s3 link
-    phone: {type:String, required:true, unique:true}, 
-    password: {type:String, required:true, min:8, max:15}, // encrypted password
+    phone: {type:String, required:true, unique:true,trim:true}, 
+    password: {type:String, required:true, min:8, max:15,trim:true}, // encrypted password
     address: {
       shipping: {
         street: {type:String, required:true,trim:true},

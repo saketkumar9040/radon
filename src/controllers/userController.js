@@ -26,7 +26,7 @@ const createUser = async function (req, res) {
         .status(400)
         .send({ status: false, message: "Body Should not be empty" });
     let files = req.files;
-    const { fname, lname, email, phone, password, address, profileImage } =
+    let { fname, lname, email, phone, password, address, profileImage } =
       data;
     let arr = ["fname", "lname", "email", "phone", "password", "address"];
     for (let i = 0; i < arr.length; i++) {
@@ -57,7 +57,7 @@ const createUser = async function (req, res) {
       return res
         .status(400)
         .send({ status: false, message: "email shouldnot be empty" });
-    if (!isValidMail(email))
+    if (!isValidMail(email.trim()))
       return res
         .status(400)
         .send({ status: false, message: "Pls enter EmailId in Valid Format" });
@@ -66,7 +66,7 @@ const createUser = async function (req, res) {
       return res
         .status(400)
         .send({ status: false, message: "phone shouldnot be empty" });
-    if (!isValidPh(phone))
+    if (!isValidPh(phone.trim()))
       return res.status(400).send({
         status: false,
         message: "Phone No.Should be valid INDIAN no.",
