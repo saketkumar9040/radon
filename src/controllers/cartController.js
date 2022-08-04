@@ -88,6 +88,7 @@ const createCart = async function (req, res) {
                 .status(400)
                 .send({ status: false, message: `${cartId} not a Valid Id` });
         let cartExists = await cartModel.findById(cartId);
+        if(!cartExists)return res.status(404).send({status:false,message:"No such cart Exists"})
         let cartItems = cartExists.items;
         for (let i = 0; i < cartItems.length; i++) {
             if (cartExists.items[i].productId == productId) {
@@ -304,17 +305,15 @@ const deleteCart = async (req, res) => {
             return res
                 .status(400)
                 .send({ status: false, message: "No such user exists" });
-        let findCart = await cartModel.findOneAndUpdate(
-            { userId: userId },
-            { items: [], totalItems: 0, totalPrice: 0 }
-        );
+       let findCart = await cartModel.findOne( { userId: userId });
         if (!findCart)
             return res
                 .status(404)
                 .send({ status: false, message: "No such cart Exists" });
+        if(findCart.items.length==0)return res.status(400).send({status:false,message:"This Cart Is already Deleted"})
         console.log(findCart);
-        res
-            .status(204)
+        return res
+            .status(200)
             .send({ status: true, message: "cart Deleted Successfully" });
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message });
