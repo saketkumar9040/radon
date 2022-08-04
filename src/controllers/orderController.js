@@ -67,7 +67,7 @@ const updateOrder= async(req,res)=>{
    if(orderExists.status=="cancled")return res.status(400)
    .send({status:false,message:`(${orderId}) is already cancelled please create another order for updations `})
 
-   if(orderExists.cancellable==false)return res.status(400).send({status:false,message:"The order that you have been  trying to cancel is under non-cancellable property"})
+   if(orderExists.cancellable==false)return res.status(400).send({status:false,message:"The order that you have been trying to cancel is under non-cancellable property"})
 
    let updatedOrder=await orderModel.findOneAndUpdate({_id:orderId},{status:"cancled",deletedAt:new Date(),isDeleted:true},{new:true})
    return res.status(200).send({status:true,message:"Order Updated Successfully",data:updatedOrder})
