@@ -8,7 +8,7 @@ const createOrder=async(req,res)=>{
 
    try{
      let userId=req.params.userId
-     if(!isValidObjectId(userId))return res.status(40).send({status:false,message:"User Id is not in valid format"})
+     if(!isValidObjectId(userId))return res.status(400).send({status:false,message:"User Id is not in valid format"})
      let userExists=await userModel.findOne({_id:userId,isDeleted:false})
      if(!userExists)return res.status(404).send({status:false,message:"No such user exists"})
      let userCart=await cartModel.findOne({userId:userId})
@@ -49,4 +49,25 @@ const createOrder=async(req,res)=>{
     }
 }
 
-module.exports={createOrder}
+const updateOrder= async(req,res)=>{
+
+   let userId=req.params.userId
+
+   let data=req.body
+   let{orderId}=data
+   if(!"orderId" in data)return res.status(400).send({status:false,message:"Please enter object Id in body"})
+   if(!isValid(orderId))return res.status(400).send({status:false,})
+   if(!isValidObjectId(orderId))return res.status(400).send({status:false,message:"Please enter a valid object Id"})
+   let orderExists=await orderModel.findOne({_id:orderId,userId:userId})
+   if(!orderExists)return res.status(404).send({status:false,message:"This order doesn't belongs to the users "})
+
+   if(orderExists.status=="cancled")return res.status(400).send({status:false,message:"This order has already been cancelled"})
+
+   if(orderExists.cancellable==false)return res.status(400).send({status:false,message:"The order user is trying to cancel is non-cancellable"})
+
+   let updatedOrder=await orderModel.findOneAndUpdate({_id:orderId},{status:"cancled"},{new:true})
+   return res.status(200).send({status:true,message:"Order Updated Successfully",data:updatedOrder})
+
+}
+
+module.exports={createOrder,updateOrder}
