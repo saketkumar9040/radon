@@ -238,7 +238,7 @@ const updateCart = async (req, res) => {
         return res
             .status(400)
             .send({ status: false, message: "Enter cartId in valid format" });
-    let cartExists = await cartModel.findOne({ _id: cartId });
+    let cartExists = await cartModel.findOne({ _id: cartId ,userId:userId});
     if (!cartExists)
         return res
             .status(404)
