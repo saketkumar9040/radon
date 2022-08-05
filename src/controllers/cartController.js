@@ -13,6 +13,7 @@ const createCart = async function (req, res) {
 
   try{
     let userId = req.params.userId;
+    if(userId.length==0 ||userId==':userId') return res.status(400).send({status:false,message:"Please Enter UserId in params"})
     let body = req.body;
 
 //———————————————————————————:) Empty  body  validation
@@ -168,6 +169,7 @@ const createCart = async function (req, res) {
 const getCartDetails = async (req, res) => {
     try {
         let userId = req.params.userId;
+        if(userId.length==0 ||userId==':userId') return res.status(400).send({status:false,message:"Please Enter UserId in params"})
         if (!isValidObjectId(userId))
             return res
                 .status(400)
@@ -199,6 +201,8 @@ const getCartDetails = async (req, res) => {
 
 const updateCart = async (req, res) => {
   try{
+    let userId= req.params.userId
+    if(userId.length==0 ||userId==':userId') return res.status(400).send({status:false,message:"Please Enter UserId in params"})
     let body = req.body;
     if (isValidBody(body))
         return res
@@ -329,6 +333,7 @@ const updateCart = async (req, res) => {
 const deleteCart = async (req, res) => {
     try {
         let userId = req.params.userId;
+        if(userId.length==0 ||userId==':userId') return res.status(400).send({status:false,message:"Please Enter UserId in params"})
         if (!isValidObjectId(userId))
             return res
                 .status(400)

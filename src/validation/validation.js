@@ -78,7 +78,9 @@ const isValidTName = (name) => {
     if (/^[A-Za-z0-9]+[A-Za-z0-9\u00C0-\u017F-' ]*$/.test(tName))
         return true
 }
+const isValidStatus=(x)=>{
+    return (x=="pending"|| x=="completed" || x=="cancled")
+}
 
 
-
-module.exports={isValid,isValidStreet,isValidPincode,isValidPassword,isValidPassword,isValidPh,isValidMail,isValidName,isValidBody,securepw,comparePw,isValidImg,isValidObjectId,isValidCurrency,isValidSize,isValidTName}
+module.exports={isValid,isValidStreet,isValidPincode,isValidPassword,isValidPassword,isValidPh,isValidMail,isValidName,isValidBody,securepw,comparePw,isValidImg,isValidObjectId,isValidCurrency,isValidSize,isValidTName,isValidStatus}

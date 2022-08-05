@@ -1,6 +1,6 @@
 const cartModel = require("../models/cartModel")
 const orderModel=require("../models/orderModel")
-const { isValid, isValidObjectId } = require("../validation/validation")
+const { isValid, isValidObjectId,isValidStatus } = require("../validation/validation")
 
 //—————————————————————————————————————————[  Create Order  ]————————————————————————————————————————————————————
 const createOrder=async(req,res)=>{
@@ -51,26 +51,34 @@ const createOrder=async(req,res)=>{
     }
 }
 
-//—————————————————————————————————————————[  Update User  ]————————————————————————————————————————————————————
+//—————————————————————————————————————————[  Update Order  ]————————————————————————————————————————————————————
 const updateOrder= async(req,res)=>{
    try{
    let userId=req.params.userId
 
    let data=req.body
-   let{orderId}=data
-   if(!"orderId" in data)return res.status(400).send({status:false,message:"Please enter order Id in body"})
+   let{orderId,status}=data
+   if(!("orderId" in data))return res.status(400).send({status:false,message:"Please enter order Id in body"})
+   if(!("status" in data))return res.status(400).send({status:false,message:"Please enter Status in body"})
    if(!isValid(orderId))return res.status(400).send({status:false,message:"Order Id should not be empty"})
    if(!isValidObjectId(orderId))return res.status(400).send({status:false,message:"Please enter a valid object Id"})
+   if(!isValid(status))return res.status(400).send({status:false,message:"Status should not be empty"})
+   if(!isValidStatus(status.toLowerCase())) return res.status(400).send({status:false,message:`(${status})=> Status Should Be only from These [pending, completed, cancled]` })
+
    let orderExists=await orderModel.findOne({_id:orderId,userId:userId})
    if(!orderExists)return res.status(404).send({status:false,message:"This order doesn't belongs to the users "})
 
    if(orderExists.status=="cancled")return res.status(400)
    .send({status:false,message:`(${orderId}) is already cancelled please create another order for updations `})
 
-   if(orderExists.cancellable==false)return res.status(400).send({status:false,message:"The order that you have been trying to cancel is under non-cancellable property"})
+   if(orderExists.status=="completed")return res.status(400)
+   .send({status:false,message:`This Order is Completed You CanNot Make any updations on This Order =->(${orderId})`})
 
-   let updatedOrder=await orderModel.findOneAndUpdate({_id:orderId},{status:"cancled",deletedAt:new Date(),isDeleted:true},{new:true})
-   return res.status(200).send({status:true,message:"Order Updated Successfully",data:updatedOrder})
+   if(orderExists.cancellable==false)return res.status(400).send({status:false,message:"The order that you have been trying to cancel is under non-cancellable property"})
+    
+   orderExists.status=status.toLowerCase()
+   orderExists.save()
+   return res.status(200).send({status:true,message:"Order Updated Successfully",data:orderExists})
    }catch(err){
       return res.status(500).send({status:false,message:err.message})
    }
