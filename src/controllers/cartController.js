@@ -41,7 +41,7 @@ const createCart = async function (req, res) {
 
     if (!productExists)
         return res
-            .status(400)
+            .status(404)
             .send({ status: false, message: `No Product With This Id ${productId}` });
     if ("quantity" in body) {
         let str = "";
@@ -334,28 +334,19 @@ const deleteCart = async (req, res) => {
     try {
         let userId = req.params.userId;
         
-        if (!isValidObjectId(userId))
-            return res
-                .status(400)
-                .send({ status: false, message: "Enter userId in valid format" });
-        if (!(await userModel.findById(userId)))
-            return res
-                .status(400)
-                .send({ status: false, message: "No such user exists" });
        let findCart = await cartModel.findOne( { userId: userId });
         if (!findCart)
             return res
                 .status(404)
                 .send({ status: false, message: "No such cart Exists" });
         if(findCart.items.length==0)return res.status(400).send({status:false,message:"This Cart Is already Deleted"})
-        console.log(findCart);
         findCart.totalItems=0
         findCart.totalPrice=0
         findCart.items=[]
         findCart.save()
         
         return res
-            .status(200)
+            .status(204)
             .send({ status: true, message: "cart Deleted Successfully" });
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message });

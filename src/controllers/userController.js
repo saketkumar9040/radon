@@ -302,7 +302,6 @@ const getUser = async function (req, res) {
         .status(400)
         .send({ status: false, message: "Given id format is invalid" });
     let findParams = await usermodel.findById(data);
-    console.log(findParams);
     if (!findParams)
       return res
         .status(404)

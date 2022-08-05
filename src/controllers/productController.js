@@ -337,7 +337,7 @@ const getProductById = async function (req, res) {
     if (data.isDeleted == true) {
       return res
         .status(404)
-        .send({ status: false, message: "This product is Deleted" });
+        .send({ status: false, message: "This product is not found as it is already Deleted" });
     }
     res.status(200).send({ status: true, data: data });
   } catch (err) {
@@ -365,7 +365,7 @@ const updateProduct = async function (req, res) {
     if (data.isDeleted == true) {
       return res
         .status(404)
-        .send({ status: false, message: "This product is Deleted" });
+        .send({ status: false, message: "This product is not found as it is already Deleted" });
     }
 
     let body = req.body;
