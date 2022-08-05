@@ -275,7 +275,7 @@ const loginUser = async (req, res) => {
     }
 
     let token = jwt.sign({ userId: user._id.toString() }, "project5@sss123", {
-      expiresIn: "2d",
+      expiresIn: "30m",
     });
 
     res.status(200).send({

@@ -24,10 +24,10 @@ router.get("/products",getProducts )
 
 //—————————————————————————————————————————[  Cart Api's  ]————————————————————————————————————————————————————
 
-router.post("/users/:userId/cart",authen,createCart)
-router.get("/users/:userId/cart",authen,getCartDetails)
-router.delete("/users/:userId/cart",authen,deleteCart)
-router.put("/users/:userId/cart",authen,updateCart)
+router.post("/users/:userId/cart",authen,author,createCart)
+router.get("/users/:userId/cart",authen,author,getCartDetails)
+router.delete("/users/:userId/cart",authen,author,deleteCart)
+router.put("/users/:userId/cart",authen,author,updateCart)
 
 //—————————————————————————————————————————[  order Api's  ]————————————————————————————————————————————————————
  
