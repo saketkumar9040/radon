@@ -216,6 +216,8 @@ const createUser = async function (req, res) {
       }
       let uploadedFileURL = await uploadFile(files[0]);
       data.profileImage = uploadedFileURL;
+
+      
       let saveddata = await usermodel.create(data);
       res
         .status(201)
@@ -430,7 +432,7 @@ const updateUser = async function (req, res) {
 
     //——————————————————————————————>)  Address Validations  (<——————————————————————————————
     if ("address" in data) {
-      if (typeof address === "string")
+      if (typeof address === "string") 
         return res
           .status(400)
           .send({ status: false, message: "Address should be an Object" });

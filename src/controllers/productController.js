@@ -219,7 +219,7 @@ const getProducts = async function (req, res) {
       "priceSort",
     ];
     for (let i = 0; i < checkInput.length; i++) {
-      if (!arr.includes(checkInput[i])) {
+      if (!(arr.includes(checkInput[i]))) {
         return res
           .status(400)
           .send({
