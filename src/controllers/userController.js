@@ -26,8 +26,7 @@ const createUser = async function (req, res) {
         .status(400)
         .send({ status: false, message: "Body Should not be empty" });
     let files = req.files;
-    let { fname, lname, email, phone, password, address, profileImage } =
-      data;
+    let { fname, lname, email, phone, password, address, profileImage } = data;
     let arr = ["fname", "lname", "email", "phone", "password", "address"];
     for (let i = 0; i < arr.length; i++) {
       if (!(arr[i] in data)) {
@@ -208,7 +207,7 @@ const createUser = async function (req, res) {
 
     data.password = await securepw(data.password);
     if (files && files.length > 0) {
-      if (!isValidImg(files[0].mimetype)) {
+      if (!isValidImg(files[0].mimetype)) { //  MULTIPURPOSE INTERNET MAIL EXTENSIONS
         return res.status(400).send({
           status: false,
           message: "Image Should be of JPEG/ JPG/ PNG",
@@ -217,7 +216,6 @@ const createUser = async function (req, res) {
       let uploadedFileURL = await uploadFile(files[0]);
       data.profileImage = uploadedFileURL;
 
-      
       let saveddata = await usermodel.create(data);
       res
         .status(201)
@@ -432,7 +430,7 @@ const updateUser = async function (req, res) {
 
     //——————————————————————————————>)  Address Validations  (<——————————————————————————————
     if ("address" in data) {
-      if (typeof address === "string") 
+      if (typeof address === "string")
         return res
           .status(400)
           .send({ status: false, message: "Address should be an Object" });
